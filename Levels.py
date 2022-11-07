@@ -1,5 +1,5 @@
 import pygame, time
-from Blocks_And_Objects import RespawnPoint, Tile, Spring, Portal
+from Blocks_And_Objects import *
 from player import Player
 from Enemies import *
 from Menu import *
@@ -20,7 +20,7 @@ class Level:
         self.CurrentLevelNum = CurrentLevelNum
         self.ProgrammerMode = ProgrammerMode
         
-
+        
         # Setup Level
         self.setup_level(level_data)
 
@@ -33,12 +33,14 @@ class Level:
         # Menu
         self.InGameMenu = InGameMenu
         self.MenuDisplayed = False
+        self.CollectedGoldenGear = False
+        self.GoldenGearImg = pygame.image.load('MenuItems/Golden Gear.png').convert_alpha()
 
         # Timer
         self.ToDisableTimer = ToDisableTimer
         self.LevelStartTime = time.time()
 
-        # Indicates whether the player has beaten the level
+        # Indicates whether the player has beaten the level (hit the portal)
         self.FinishedLevel = False
 
           
@@ -51,6 +53,7 @@ class Level:
         RespawnBlock = 305
         PortalBlock = 322
         BlindingSpiderEnemy = 290
+        goldengear = 307
         
         self.RespawnReached = 0
         self.RespawnPointLocations = []                 # Variable to store the x and y position of each respawn point
@@ -98,13 +101,18 @@ class Level:
                     self.RespawnPointLocations.append([x,y])
                     self.AnimatedObjects.add(tile)
                 elif CurrentValue == PortalBlock:
-                    tile = Portal((x,y),(112,164), TileSize, 'Portal')        
+                    tile = Portal((x,y),(112,164), TileSize, 'Portal')     
+                    self.portal = tile   
                     self.tiles.add(tile)
-                    self.portal = tile
                     self.AnimatedObjects.add(tile)
                 elif CurrentValue == BlindingSpiderEnemy:
                     enemy = BlindingSpider((x,y))
                     self.enemies.add(enemy)
+                elif CurrentValue == goldengear:
+                    tile = GoldenGear((x,y), (48,48), TileSize, 'GoldenGear')
+                    self.GoldenGear = tile
+                    self.tiles.add(tile)
+                    self.AnimatedObjects.add(tile)
                 elif CurrentValue == 1000:
                     PlayerSprite = Player((x, y))
                     self.player.add(PlayerSprite)
@@ -225,6 +233,11 @@ class Level:
                         self.DistanceMovedY = 0     
                         sprite.Status = 'Saving'
                         sprite.FrameIndex = 0
+
+                elif sprite.type == 'GoldenGear':
+                    PlayGoldenGearCollection()
+                    self.CollectedGoldenGear = True
+                    sprite.kill()
                 
 
                 # PLAYER Y COLLISION CHECKS:
@@ -399,3 +412,7 @@ class Level:
         # Updating timer
         self.UpdateTimer(self.ToDisableTimer)
             
+
+        # Display golden gear if collected
+        if self.CollectedGoldenGear:
+            self.display_surface.blit(self.GoldenGearImg, (ScreenWidth - 100, ScreenHeight - 100))

@@ -144,6 +144,7 @@ class Button(pygame.sprite.Sprite):
                 # Check if volume has been set to off
                 if Volume == -1:
                     mixer.music.set_volume(0)
+                    mixer.music.Channel(1).set_volume(0)
                 # Otherwise set volume to new volume
                 else:
                     mixer.music.set_volume(Volume)

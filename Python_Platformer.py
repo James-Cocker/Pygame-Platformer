@@ -75,7 +75,7 @@ while True:
 
     # Running the next level when the player compltes the first one
     if CurrentLevel.FinishedLevel == False:
-        CurrentLevel.run()              
+        CurrentLevel.run()               
     else:
         TempToDisableTimer = CurrentLevel.ToDisableTimer
         CurrentLevel, CurrentLevelNum = MoveToNextLevel(CurrentLevelNum, TempToDisableTimer)

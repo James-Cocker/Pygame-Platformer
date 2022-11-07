@@ -102,7 +102,7 @@ class RespawnPoint(AnimatedObject):
 
         # Loop over frame index
         self.FrameIndex += self.AnimationSpeed
-        if self.FrameIndex >= len(Animation):
+        if int(self.FrameIndex) == len(self.Animation) - 1:
             if self.Status == 'Saving':
                 self.Status = 'Idle'
             self.FrameIndex = 0
@@ -136,51 +136,30 @@ class Spring(AnimatedObject):
             self.image = self.Animation[self.FrameIndex]
 
 
-# class RespawnPoint(Tile):
-#     def __init__(self,pos,size,type):
-#         super().__init__(pos,size,type)     # Run the initialisation routine of Tile
-#         # Import assets and set attributes
-#         self.ImportAssets()
-#         self.ID = 0                         # Where ID is the number of the respawn point
-#         self.Status = 'Idle'
-#         self.PreviousStatus = 'Idle'
-#         self.FrameIndex = 0
-#         self.AnimationSpeed = 0.15
-#         self.Saving = False
-#         self.image = self.Animations['Idle'][self.FrameIndex]                # Fill the surface with the animation frame 'idle'
-#         self.rect = self.image.get_rect(midbottom = self.rect.midbottom)                # Give the rectangle for the surface the same dimensions as the image
+class GoldenGear(AnimatedObject):
+    def __init__(self, pos, size, TileSize, type):
+        Animations = {'Idle':[]}
+        Path = 'SpriteSheets/AnimatedObjects/Golden Gear/'
+        super().__init__(pos, size, TileSize, 0, type, Animations, Path)     # Run the initialisation routine of Animated object (and hence tile)
 
-#     def ImportAssets(self):
-#         # Set arrays for each animation state
-#         self.Animations = {'Idle':[], 'Saving':[], 'Startup':[]}
+        # Set attributes
+        InitialYPos = self.rect.y
+        self.UpperBound = InitialYPos - 64
+        self.LowerBound = InitialYPos
+        self.Y_ToMove = 0
+        self.MoveUp = True
 
-#         # Add each image to the arrays for later use
-#         for Animation in self.Animations.keys():
-#             FullPath = 'SpriteSheets/AnimatedObjects/Save/' + Animation
-#             self.Animations[Animation] = ImportFolder(FullPath)
-
-#     def Animate(self):
-#         # If we have swapped to a new status, set animation speed (back) to default and frame index to 0
-#         if self.Status != self.PreviousStatus:
-#             self.PreviousStatus = self.Status
-#             self.FrameIndex = 0
-
-#         Animation = self.Animations[self.Status]
-#         self.Animation = Animation 
-
-#         # Loop over frame index
-#         self.FrameIndex += self.AnimationSpeed
-#         if self.FrameIndex >= len(Animation):
-#             if self.Status == 'Saving':
-#                 self.Status = 'Idle'
-#             self.FrameIndex = 0
-
-#         # Set image and rect of the respawn point
-#         self.image = Animation[int(self.FrameIndex)]
-#         self.rect = self.image.get_rect(midbottom = self.rect.midbottom)
-
-#     def update(self, XShift):
-#         # Shifting the respawn point, and animating it
-#         self.rect.x += XShift
-
-#         self.Animate()
+    def Animate(self):
+        # Coin floats up and down, so shift y pos up to a certain point, then back down
+        self.rect = self.image.get_rect(center = self.rect.center)                # Give the rectangle for the surface the same dimensions as the image
+        
+        YPos = self.rect.y
+        
+        if self.MoveUp:
+            self.rect.y -= 1
+            if YPos < self.UpperBound:
+                self.MoveUp = False
+        else:
+            self.rect.y += 1
+            if YPos > self.LowerBound:
+                self.MoveUp = True
