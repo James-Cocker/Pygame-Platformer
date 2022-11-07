@@ -16,6 +16,7 @@ def ImportFolder(Path):
 def ImportCSV(Path):
     # Used to import the level's cvs file into an array
     Contents = []
+    # If this errors, it means there is no 'next map' in the next level 
     with open(Path,'r') as Map:
         CSVReader = reader(Map,delimiter = ',')
         for Row in CSVReader:

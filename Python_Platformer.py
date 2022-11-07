@@ -47,13 +47,14 @@ mixer.music.play()
 def MoveToNextLevel(CurrentLevelNum, TempToDisableTimer):
     CurrentLevelNum += 1
     CSVPath = 'Levels/Level ' + str(CurrentLevelNum) + '/Level ' + str(CurrentLevelNum) + '.csv'
-    return Level(ImportCSV(CSVPath), screen, CurrentLevelNum, False, InGameMenu, TempToDisableTimer)
+    return Level(ImportCSV(CSVPath), screen, CurrentLevelNum, ProgrammerMode, InGameMenu, TempToDisableTimer), CurrentLevelNum
 
 # Create Menu (only needs to be created once each time the program is loaded - a new menu is not needed for each level)
 InGameMenu = CreateInGameMenu((300,100), screen)
 
 # Giving the main file acess to the class Level
-CurrentLevel = Level(ImportCSV('Levels/Level 0/Level 0.csv'), screen, CurrentLevelNum, False, InGameMenu, False)
+ProgrammerMode = False          # Set to true if you would like to see world as the basic rectangles the computer sees 
+CurrentLevel = Level(ImportCSV('Levels/Level 0/Level 0.csv'), screen, CurrentLevelNum, ProgrammerMode, InGameMenu, False)
 
 
 # In-game infinite loop
@@ -66,7 +67,6 @@ while True:
             # Show menu
             if CurrentLevel.MenuDisplayed == False:
                 CurrentLevel.MenuDisplayed = True
-                
             # Hide Menu
             else:
                 CurrentLevel.MenuDisplayed = False    
@@ -78,7 +78,7 @@ while True:
         CurrentLevel.run()              
     else:
         TempToDisableTimer = CurrentLevel.ToDisableTimer
-        CurrentLevel = MoveToNextLevel(CurrentLevelNum, TempToDisableTimer)
+        CurrentLevel, CurrentLevelNum = MoveToNextLevel(CurrentLevelNum, TempToDisableTimer)
 
     # Update the screen and keep the frame rate at 60
     pygame.display.update()

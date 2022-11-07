@@ -1,6 +1,7 @@
 import pygame, time
-from Blocks_And_Objects import RespawnPoint, Tile
+from Blocks_And_Objects import RespawnPoint, Tile, Spring, Portal
 from player import Player
+from Enemies import *
 from Menu import *
 from background import Background
 
@@ -27,7 +28,6 @@ class Level:
         self.DistanceMovedX = 0              # Used to keep track of how far the tileset and background will need to move should the player die
         self.DistanceMovedY = 0
         self.WorldShiftX = 0
-        self.WorldShiftY = 0
         self.CurrentX = 0
 
         # Menu
@@ -48,16 +48,20 @@ class Level:
         DamagingBlocks = [270, 271]                     # Same as above, except for tiles such as spikes
         PlatformBlocks = [58,59,60,61,62,72,73,75,76]   # Platform tiles whereby the player is able to jump on, but will not be used in x-collisions 
         SpringBlock = 281
-        RespawnBlock = 291
-        PortalBlock = 294
+        RespawnBlock = 305
+        PortalBlock = 322
+        BlindingSpiderEnemy = 290
         
         self.RespawnReached = 0
         self.RespawnPointLocations = []                 # Variable to store the x and y position of each respawn point
 
         # Setting up the types of sprites for the level tiles and player
         self.tiles = pygame.sprite.Group()
+        self.enemies = pygame.sprite.Group()
+        self.springs = pygame.sprite.Group()
+        self.player = pygame.sprite.GroupSingle()
         self.RespawnPoints = pygame.sprite.Group()
-        self.player = pygame.sprite.GroupSingle() 
+        self.AnimatedObjects = pygame.sprite.Group()
         self.background = pygame.sprite.GroupSingle()
 
         Path = 'Levels/Level ' + str(self.CurrentLevelNum) + '/Level ' + str(self.CurrentLevelNum)
@@ -74,32 +78,41 @@ class Level:
                 CurrentValue = int(Column)
 
                 if CurrentValue == NormalBlock:
-                    tile = Tile((x,y),TileSize, 'Normal')        
+                    tile = Tile((x,y),(TileSize,TileSize), TileSize, 'Normal')        
                     self.tiles.add(tile)
                 elif CurrentValue in DamagingBlocks:
-                    tile = Tile((x,y),TileSize, 'Damaging') 
+                    tile = Tile((x,y),(TileSize,16), TileSize, 'Damaging') 
                     self.tiles.add(tile)
                 elif CurrentValue in PlatformBlocks:
-                    tile = Tile((x,y),TileSize, 'Platform') 
+                    tile = Tile((x,y),(TileSize,TileSize), TileSize, 'Platform') 
                     self.tiles.add(tile)
                 elif CurrentValue == SpringBlock:
-                    tile = Tile((x,y),TileSize, 'Spring')        
+                    tile = Spring((x,y), (64,32), TileSize, 'Spring') 
                     self.tiles.add(tile)
+                    self.springs.add(tile)
+                    self.AnimatedObjects.add(tile)
                 elif CurrentValue == RespawnBlock:
-                    tile = RespawnPoint((x,y), TileSize, 'Respawn')     # Give the respawn point an ID. The first respawn point will recieve an ID of 1   
+                    tile = RespawnPoint((x,y), (64,76), TileSize, 'Respawn')     # Each respawn point will recieve an ID. The first respawn point will recieve an ID of 1   
                     self.tiles.add(tile)
                     self.RespawnPoints.add(tile)
                     self.RespawnPointLocations.append([x,y])
+                    self.AnimatedObjects.add(tile)
                 elif CurrentValue == PortalBlock:
-                    tile = Tile((x,y),TileSize, 'Portal')        
+                    tile = Portal((x,y),(112,164), TileSize, 'Portal')        
                     self.tiles.add(tile)
+                    self.portal = tile
+                    self.AnimatedObjects.add(tile)
+                elif CurrentValue == BlindingSpiderEnemy:
+                    enemy = BlindingSpider((x,y))
+                    self.enemies.add(enemy)
                 elif CurrentValue == 1000:
                     PlayerSprite = Player((x, y))
                     self.player.add(PlayerSprite)
 
-        self.RespawnPointLocations.sort(key=lambda key:key[0])          # Sort respawn point locations, then set them IDs
+        self.RespawnPointLocations.sort(key=lambda key:key[0])          # Sort respawn point locations by their x value, then set them IDs. This is because the player will always move through the level left to right,
+                                                                        # so the first respawn point will always be the leftmost one
 
-        # Allows for a max of 3 respawn points (not flexible, but a for or while loop is unessesary)
+        # Allows for a max of 5 respawn points (not flexible, but a for or while loop is unessesary)
         for RespawnPointNum in self.RespawnPoints:
             if RespawnPointNum.rect.x == self.RespawnPointLocations[0][0]:
                 RespawnPointNum.ID = 1
@@ -107,12 +120,16 @@ class Level:
                 RespawnPointNum.ID = 2
             elif RespawnPointNum.rect.x == self.RespawnPointLocations[2][0]:
                 RespawnPointNum.ID = 3
+            elif RespawnPointNum.rect.x == self.RespawnPointLocations[3][0]:
+                RespawnPointNum.ID = 4
+            elif RespawnPointNum.rect.x == self.RespawnPointLocations[4][0]:
+                RespawnPointNum.ID = 5
 
     # A scrolling routine to take the player and see if they are at the preset border. If they are then set
     # the player's speed to 0 and set the entire world to move accordingly at the inverted player speed
     def ScrollX(self, player):
         # getting variables
-        player_x = player.rect.centerx
+        player_x = player.rect.centerx      # If you get a 'nonetype' error here, it will mean the csv doesnt have a player spawn point
         Direction_x = player.Direction.x
 
         # Player borders
@@ -133,21 +150,35 @@ class Level:
             player.PlayerSpeed = player.NormalSpeed
 
     def X_CollisionCheck(self, player):
-        # Apply horizontal movement
+        # Apply player's horizontal movement
         player.rect.x += player.Direction.x * player.PlayerSpeed
+
+        # Apply enemies horizontal movement
+        for Enemy in self.enemies:
+            if Enemy.FacingRight: Enemy.rect.x += Enemy.Speed
+            else: Enemy.rect.x += -Enemy.Speed
+            
 
         # Now check for collision
         for sprite in self.tiles.sprites():
-            # Do not check for x collisions with platforms or spikes 
-            if sprite.rect.colliderect(player.rect) and sprite.type == 'Normal':
-                if player.Direction.x < 0:
-                    player.rect.left = sprite.rect.right
-                    player.OnLeft = True
-                    self.CurrentX = player.rect.left
-                elif player.Direction.x > 0 and sprite.type == 'Normal':
-                    player.rect.right = sprite.rect.left
-                    player.OnRight = True
-                    self.CurrentX = player.rect.right
+            # Do not check for x collisions with platforms or spikes, just normal blocks
+            if sprite.type == 'Normal':
+                # Player x collision
+                if sprite.rect.colliderect(player.rect):
+                    if player.Direction.x < 0:
+                        player.rect.left = sprite.rect.right
+                        player.OnLeft = True
+                        self.CurrentX = player.rect.left
+                    elif player.Direction.x > 0:
+                        player.rect.right = sprite.rect.left
+                        player.OnRight = True
+                        self.CurrentX = player.rect.right
+
+                # Enemy x collision
+                for Enemy in self.enemies:
+                    if sprite.rect.colliderect(Enemy.rect):
+                        Enemy.rect.right = sprite.rect.left
+                        Enemy.FacingRight = not Enemy.FacingRight           # Use not operator to invert boolean
 
         # Resetting 'on left' and 'on right' attributes when player stops or moves in opposite direction
         if player.OnLeft and (player.rect.left < self.CurrentX or player.Direction.x >= 0):
@@ -159,12 +190,19 @@ class Level:
         # Apply vertical movement
         player.ApplyGravity()
 
+        # Apply enemies horizontal movement
+        for Enemy in self.enemies:
+            Enemy.rect.y += Enemy.Gravity
+
         # Now check for collision
         for sprite in self.tiles.sprites():
             if sprite.rect.colliderect(player.rect):
-                if sprite.type == 'Portal':
-                    # Player has beaten the level and should be put onto the next
-                    self.FinishedLevel = True
+                # GENERAL PLAYER COLLISION CHECKS:
+
+                # Player has beaten the level and should be put onto the next
+                if sprite.type == 'Portal' and sprite.Status != 'Warp':
+                    sprite.Status = 'Warp'
+                    sprite.FrameIndex = 0
 
                 # Kill player if they land on a set of spikes, or other damaging block
                 if sprite.type == 'Damaging':
@@ -172,6 +210,7 @@ class Level:
 
                 # Bounce player if they hit a spring
                 if sprite.type == 'Spring':
+                    sprite.Status = 'Bounce'
                     player.IsJumping = True
                     player.OnGround = False
                     player.rect.bottom = sprite.rect.top
@@ -187,6 +226,9 @@ class Level:
                         sprite.Status = 'Saving'
                         sprite.FrameIndex = 0
                 
+
+                # PLAYER Y COLLISION CHECKS:
+
                 # If it is none of the above, and it is not a platform then keep them on top of the tile
                 elif player.Direction.y > 0 and (sprite.type != 'Platform' or player.OnPlatform):
                     player.rect.bottom = sprite.rect.top
@@ -206,6 +248,15 @@ class Level:
                     player.IsJumping = False
                     player.OnGround = True
                     player.OnPlatform = True
+
+            # ENEMY Y COLLISION CHECKS
+            for Enemy in self.enemies:
+                if sprite.rect.colliderect(Enemy.rect):
+                    if sprite.type == 'Damaging':
+                        Enemy.Death()
+                    elif sprite.type ==  'Normal':
+                        Enemy.rect.bottom = sprite.rect.top
+
         
         # Setting player's ground, platform and ceiling attributes
         if player.OnGround and player.Direction.y < 0 or player.Direction.y > 1:
@@ -232,11 +283,14 @@ class Level:
 
             # Reset Level
             background = self.background.sprite
-            background.ResetLevel(self.DistanceMovedX,self.DistanceMovedY)
+            background.ResetLevel(self.DistanceMovedX)
             for tile in self.tiles:
-                tile.ResetLevel(self.DistanceMovedX,self.DistanceMovedY)
+                tile.ResetLevel(self.DistanceMovedX)
             self.DistanceMovedX = 0
-            self.DistanceMovedY = 0
+
+            # Reset enemies
+            for Enemy in self.enemies:
+                Enemy.ResetLevel(self.DistanceMovedX)
             
             # Start the startup animation of the respawn point
             for RespawnPointNum in self.RespawnPoints:
@@ -245,12 +299,13 @@ class Level:
                     RespawnPointNum.FrameIndex = 0
                     break
 
-            # Reset Player
-            if int(RespawnPointNum.FrameIndex) == len(RespawnPointNum.Animation) - 1:
-                RespawnPointNum.Status = 'Idle'
-                player.FrameIndex = 0
-                player.rect = player.image.get_rect(topleft = player.RespawnPoint)
-                player.Alive = True
+                # Reset Player
+                if int(RespawnPointNum.FrameIndex) == len(RespawnPointNum.Animation) - 1:
+                    player.Direction.y = 0
+                    RespawnPointNum.Status = 'Idle'
+                    player.FrameIndex = 0
+                    player.rect = player.image.get_rect(topleft = player.RespawnPoint)
+                    player.Alive = True
              
     def UpdateTimer(self, DisableTimer):
         # Update timer by subtracting current time from level start time
@@ -262,49 +317,76 @@ class Level:
             self.display_surface.blit(TimerText, (50,ScreenHeight-60))
         
     def run(self):
-        # Get player
-        player = self.player.sprite
+        # --- Drawing and Updating Screen ---
 
-
-        # Drawing Screen
-        self.tiles.update(self.WorldShiftX, self.WorldShiftY)            # Calling the scrolling through level function
+        # Calling the scrolling through level function
+        self.tiles.update(self.WorldShiftX)            
         
-
-        # If the player is in "Programmer mode" then display the 'tiles'
+        # If the user is in "Programmer mode" then display the 'tiles'
         if self.ProgrammerMode:
             # Tiles
             self.tiles.draw(self.display_surface)
         else:
             # Background
-            self.background.update(self.WorldShiftX, self.WorldShiftY)
+            self.background.update(self.WorldShiftX)
             self.background.draw(self.display_surface)
 
-        self.RespawnPoints.draw(self.display_surface)    
+        self.AnimatedObjects.draw(self.display_surface)    
 
 
-        # Update distance moved by player (for respawn point)
-        self.DistanceMovedX += self.WorldShiftX
-        self.DistanceMovedY += self.WorldShiftY
+        # --- Check for End of Game ---
 
-        self.ScrollX(player)
+        # Check portal's status       
+        if self.portal.Status == 'Warp':            # The only time the warp animation is played is when the player has reached the portal
+            if (int(self.portal.FrameIndex) == len(self.portal.Animation) - 1):        
+                self.FinishedLevel = True
 
 
-        # Player
-        self.player.update()
-        self.CheckResetLevel(player)
+        # --- Animation ---
 
-        PlayerWidth = player.rect.width         # Storing the temporary value of the width so the player can be checked for collisions with the correct rect, 
-        player.rect.width = 25                  # then it can be put back for when the next animation slide is placed on the rect
-        
-        self.X_CollisionCheck(player)           # Check collisions for the x and y directions of the player. This must be done separately so that we know wether 
-        self.Y_CollisionCheck(player)           # the player needs to be 'pushed' in the x or y direction of a block
+        # Enemies
+        for Enemy in self.enemies:
+            Enemy.update(self.WorldShiftX)
+            self.display_surface.blit(Enemy.image, (Enemy.rect.x, Enemy.rect.y))
 
-        if player.FacingRight:
-            self.display_surface.blit(player.image, (player.rect.x - 24, player.rect.y))
+
+        # --- World shifting and Player ---
+
+        # Check that the portal isnt warping before changing the player or scrolling the world
+        if self.portal.Status != 'Warp':
+            # Get player
+            player = self.player.sprite
+
+            # - World Shifting -
+
+            # Update distance moved by player (for respawn point)
+            self.DistanceMovedX += self.WorldShiftX
+
+            # Scroll level
+            self.ScrollX(player)
+
+
+            # - Player -
+            self.player.update()
+            self.CheckResetLevel(player)
+
+            PlayerWidth = player.rect.width         # Storing the temporary value of the width so the player can be checked for collisions with the correct rect, 
+            player.rect.width = 25                  # then it can be put back for when the next animation slide is placed on the rect
+            self.portal.rect.y += 156               # Similar with portal, except shift it up and down  
+            
+            self.X_CollisionCheck(player)           # Check collisions for the x and y directions of the player. This must be done separately so that we know wether 
+            self.Y_CollisionCheck(player)           # the player needs to be 'pushed' in the x or y direction of a block
+
+            if player.FacingRight:
+                self.display_surface.blit(player.image, (player.rect.x - 24, player.rect.y))
+            else:
+                self.display_surface.blit(player.image, (player.rect.x - 50, player.rect.y))
+            
+            player.rect.width = PlayerWidth         # Restore player's rect for the image processing
+            self.portal.rect.y -= 156               # Restore portal's rect
         else:
-            self.display_surface.blit(player.image, (player.rect.x - 50, player.rect.y))
-        
-        player.rect.width = PlayerWidth         # Restore player's rect for the image processing
+            # Stop shifting world
+            self.WorldShiftX = 0
 
 
         # Display menu 

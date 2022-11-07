@@ -6,11 +6,9 @@ class Background(pygame.sprite.Sprite):    # Used to create a template for the b
         self.image = pygame.image.load(FullPath + '.png')
         self.rect = self.image.get_rect(topleft = (0,0))
 
-    def ResetLevel(self, XOffset, YOffset):
+    def ResetLevel(self, XOffset):
         self.rect.x -= XOffset
-        self.rect.y -= YOffset
 
     # Will scroll through the level, shifting each tile to the left or right 
-    def update(self, XShift, YShift):
+    def update(self, XShift):
         self.rect.x += XShift
-        self.rect.y += YShift

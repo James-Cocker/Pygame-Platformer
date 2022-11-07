@@ -28,6 +28,7 @@ class Player(pygame.sprite.Sprite):
         self.PreviousStatus  = 'Idle'
         self.FacingRight = True
 
+        # Player collisions
         self.OnCeiling = False
         self.OnGround = False
         self.OnRight = False
@@ -119,7 +120,9 @@ class Player(pygame.sprite.Sprite):
         # Add gravity onto the player
         self.Direction.y += self.Gravity
         self.rect.y += self.Direction.y
-        if self.rect.y > 2000:
+
+        # Kill player if too far down in level
+        if self.rect.y > 1000:
             self.PlayerDeath()
 
     def PlayerDeath(self):
