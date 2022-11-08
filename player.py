@@ -1,10 +1,11 @@
 import pygame
+from pygame import K_SPACE
 from Support import ImportFolder
 from Sounds import *
 
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, SpawnPoint):
+    def __init__(self, SpawnPoint, ObtainedDoubleJump, ObtainedDash):
         super().__init__()
         self.ImportAssets()
         self.RespawnPoint = SpawnPoint
@@ -23,6 +24,13 @@ class Player(pygame.sprite.Sprite):
         self.IsJumping = False
         self.IsFalling = False
         self.Alive = True
+
+        # Player Abilities
+        self.SpacePressed = False
+        self.ObtainedDoubleJump = ObtainedDoubleJump
+        self.DoubleJump = ObtainedDoubleJump
+        self.ObtainedDash = ObtainedDash
+        self.Dash = ObtainedDash
 
         # Player Status
         self.Status = 'Idle'
@@ -67,12 +75,16 @@ class Player(pygame.sprite.Sprite):
             self.image = pygame.transform.flip(AnimFrame, True, False)    # We want to flip in the x axis, but not the y axis
 
         # Set the rectangle of the player when touching the floor (and hitting walls)
-        if self.OnGround and self.OnRight:
-            self.rect = self.image.get_rect(bottomright = self.rect.bottomright)
-        elif self.OnGround and self.OnLeft:
-            self.rect = self.image.get_rect(bottomleft = self.rect.bottomleft)
-        elif self.OnGround:
-            self.rect = self.image.get_rect(midbottom = self.rect.midbottom)
+        if self.OnGround:
+            if self.ObtainedDoubleJump and self.DoubleJump == False: 
+                self.DoubleJump = True
+
+            if self.OnRight:
+                self.rect = self.image.get_rect(bottomright = self.rect.bottomright)
+            elif self.OnLeft:
+                self.rect = self.image.get_rect(bottomleft = self.rect.bottomleft)
+            else:
+                self.rect = self.image.get_rect(midbottom = self.rect.midbottom)
         
         # Set the rectangle of the player when hitting the ceiling (and hitting walls)
         elif self.OnCeiling and self.OnRight:
@@ -95,10 +107,19 @@ class Player(pygame.sprite.Sprite):
             self.Direction.x = 0
 
         # Test if player is jumping
-        if Key[pygame.K_SPACE] and self.IsJumping == False and self.IsFalling == False:
-            PlayerJumpSound()
-            self.IsJumping = True
-            self.Jump(self.JumpSpeed)
+        if self.SpacePressed:
+            self.SpacePressed = False
+            # See if player is attempting a normal jump
+            if self.IsJumping == False and self.IsFalling == False:
+                PlayerJumpSound()
+                self.IsJumping = True
+                self.Jump(self.JumpSpeed)
+            # See if player is double jumping
+            elif self.DoubleJump and self.OnGround == False:
+                self.DoubleJump = False
+                PlayerJumpSound()
+                self.IsJumping = True
+                self.Jump(self.JumpSpeed + 5)            
 
     def GetStatus(self):
         # Override all statuses if the player has died

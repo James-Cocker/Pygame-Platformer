@@ -101,7 +101,7 @@ class Enemy(AnimatedObject):
 class BlindingSpider(Enemy):
     def __init__(self, SpawnPoint, TileSize):
         Speed = 3
-        Size = (80,32)
+        Size = (80, 32)
         AnimationsPath = 'SpriteSheets/Enemies/Blinding Spider/'
         super().__init__(AnimationsPath, Speed, SpawnPoint, Size, TileSize)
 

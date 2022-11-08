@@ -13,16 +13,23 @@ TileSize = 64
 # Creating the call that will be used for each level
 class Level:
     # Creating an initialisation routine
-    def __init__(self, level_data, surface, CurrentLevelNum, ProgrammerMode, InGameMenu, ToDisableTimer, PlayerLives):
+    def __init__(self, level_data, surface, CurrentLevelNum, ProgrammerMode, InGameMenu, ToDisableTimer, PlayerLivesAndAbilities):
         # Set attributes
         self.TimerFont = pygame.font.SysFont("8-Bit-Madness", 80)
         self.display_surface = surface
         self.CurrentLevelNum = CurrentLevelNum
         self.ProgrammerMode = ProgrammerMode
 
-        # Health bar
-        self.HealthBarImg = pygame.image.load('MenuItems/Health Bar/' + str(PlayerLives) + '.png').convert_alpha()
-        self.PlayerLives = PlayerLives
+        # Health Bar
+        print(PlayerLivesAndAbilities)
+        self.PlayerLives = PlayerLivesAndAbilities[0]
+        self.HealthBarImg = pygame.image.load('MenuItems/Health Bar/' + str(self.PlayerLives) + '.png').convert_alpha()
+
+        # Player Abilities
+        self.PlayerLivesAndAbilities = PlayerLivesAndAbilities
+        self.SpacePressed = False
+        self.PlayerDoubleJump = PlayerLivesAndAbilities[1]
+        self.PlayerDash = PlayerLivesAndAbilities[2]
         
         # Setup Level
         self.setup_level(level_data)
@@ -75,8 +82,8 @@ class Level:
         Path = 'Levels/Level ' + str(self.CurrentLevelNum) + '/Level ' + str(self.CurrentLevelNum)
         self.background.add(Background(Path))
 
-        for RowIndex,Row in enumerate(layout):          # Enumerate gives index and information
-            for ColumnIndex,Column in enumerate(Row):           # For each row, cycle through each cell
+        for RowIndex,Row in enumerate(layout):              # Enumerate gives index and information
+            for ColumnIndex,Column in enumerate(Row):       # For each row, cycle through each cell
                 # e.g. this will print each cell's contents with the exact row and column 
                 # print(f'{RowIndex},{ColumnIndex}:{Column}')
                 x = ColumnIndex * TileSize
@@ -123,7 +130,7 @@ class Level:
                     self.tiles.add(tile)
                     self.AnimatedObjects.add(tile)
                 elif CurrentValue == PlayerSpawn:
-                    PlayerSprite = Player((x, y))
+                    PlayerSprite = Player((x, y), self.PlayerDoubleJump, self.PlayerDash)
                     self.player.add(PlayerSprite)
 
 
@@ -244,6 +251,7 @@ class Level:
                     sprite.Status = 'Bounce'
                     player.IsJumping = True
                     player.OnGround = False
+                    if player.ObtainedDoubleJump: player.DoubleJump = True
                     player.rect.bottom = sprite.rect.top
                     player.Jump(-20)
 
@@ -317,6 +325,7 @@ class Level:
             PlayerDamagedSound()
         elif self.PlayerLives < 5 and Amount == 1:
             self.PlayerLives += 1
+        self.PlayerLivesAndAbilities[0] += Amount
         self.HealthBarImg = pygame.image.load('MenuItems/Health Bar/' + str(self.PlayerLives) + '.png').convert_alpha()
 
     def CheckResetLevel(self, player):
@@ -404,7 +413,6 @@ class Level:
         if self.portal.Status != 'Warp':
             # Get player
             player = self.player.sprite
-
             # - World Shifting -
 
             # Update distance moved by player (for respawn point)
@@ -415,6 +423,10 @@ class Level:
 
 
             # - Player -
+            if self.SpacePressed: 
+                player.SpacePressed = True
+                self.SpacePressed = False
+
             self.player.update()
             self.CheckResetLevel(player)
 
@@ -453,4 +465,4 @@ class Level:
 
         # Display golden gear if collected
         if self.CollectedGoldenGear:
-            self.display_surface.blit(self.GoldenGearImg, (ScreenWidth - 50, ScreenHeight - 50))
+            self.display_surface.blit(self.GoldenGearImg, (ScreenWidth - 100, ScreenHeight - 100))
