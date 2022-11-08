@@ -257,7 +257,7 @@ class Level:
                 # PLAYER Y COLLISION CHECKS:
 
                 # If it is none of the above, and it is not a platform then keep them on top of the tile
-                elif player.Direction.y > 0 and (sprite.type == 'Normal' or player.OnPlatform):
+                elif player.Direction.y > 0 and (sprite.type == 'Normal' or sprite.type == 'Damaging' or player.OnPlatform):
                     player.rect.bottom = sprite.rect.top
                     player.Direction.y = 0
                     player.IsJumping = False
