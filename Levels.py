@@ -51,10 +51,9 @@ class Level:
         RespawnBlock = 305
         PortalBlock = 322
         BlindingSpiderEnemy = 290
-        InvisibleEnemyBlock = 286
+        InvisibleEnemyWall = 286
         goldengear = 307
         PlayerSpawn = 285
-        
         
         self.RespawnReached = 0
         self.RespawnPointLocations = []                 # Variable to store the x and y position of each respawn point
@@ -84,8 +83,8 @@ class Level:
                 if CurrentValue == NormalBlock:
                     tile = Tile((x,y),(TileSize,TileSize), TileSize, 'Normal')        
                     self.tiles.add(tile)
-                if CurrentValue == InvisibleEnemyBlock:
-                    tile = Tile((x,y),(TileSize,TileSize), TileSize, 'Normal')        
+                elif CurrentValue == InvisibleEnemyWall:
+                    tile = Tile((x,y),(TileSize,TileSize), TileSize, 'EnemyWall')        
                     self.tiles.add(tile)
                 elif CurrentValue in DamagingBlocks:
                     tile = Tile((x,y),(TileSize,16), TileSize, 'Damaging') 
@@ -112,8 +111,9 @@ class Level:
                 elif CurrentValue == BlindingSpiderEnemy:
                     enemy = BlindingSpider((x,y), TileSize)
                     self.enemies.add(enemy)
+                    self.tiles.add(enemy)
                 elif CurrentValue == goldengear:
-                    tile = GoldenGear((x,y), (48,48), TileSize, 'GoldenGear')
+                    tile = GoldenGear((x,y), (48,48), TileSize, 'GoldenGear', 30)
                     self.GoldenGear = tile
                     self.tiles.add(tile)
                     self.AnimatedObjects.add(tile)
@@ -169,25 +169,25 @@ class Level:
 
         # Apply enemies horizontal movement
         for Enemy in self.enemies:
-            if Enemy.FacingRight: Enemy.rect.x += Enemy.Speed
-            else: Enemy.rect.x += -Enemy.Speed
-            
+            if Enemy.Status != 'Attack':
+                if Enemy.FacingRight: Enemy.rect.x += Enemy.Speed
+                else: Enemy.rect.x += -Enemy.Speed
+            else:
+                if (int(Enemy.FrameIndex) == len(Enemy.Animation) - 1):         # Enemy has finished attack animation
+                    Enemy.Status = 'Idle'
 
         # Now check for collision
         for sprite in self.tiles.sprites():
-            # Do not check for x collisions with platforms or spikes, just normal blocks
-            if sprite.type == 'Normal':
-                # Player x collision
-                if sprite.rect.colliderect(player.rect):
-                    if player.Direction.x < 0:
-                        player.rect.left = sprite.rect.right
-                        player.OnLeft = True
-                        self.CurrentX = player.rect.left
-                    elif player.Direction.x > 0:
-                        player.rect.right = sprite.rect.left
-                        player.OnRight = True
-                        self.CurrentX = player.rect.right
-
+            if sprite.type == 'Normal' and sprite.rect.colliderect(player.rect):            # Do not check for x collisions with platforms or spikes, just normal blocks
+                if player.Direction.x < 0:
+                    player.rect.left = sprite.rect.right
+                    player.OnLeft = True
+                    self.CurrentX = player.rect.left
+                elif player.Direction.x > 0:
+                    player.rect.right = sprite.rect.left
+                    player.OnRight = True
+                    self.CurrentX = player.rect.right
+            if sprite.type == 'Normal' or sprite.type == 'EnemyWall':
                 # Enemy x collision
                 for Enemy in self.enemies:
                     if sprite.rect.colliderect(Enemy.rect):
@@ -196,6 +196,8 @@ class Level:
                         else:
                             Enemy.rect.left = sprite.rect.right
                         Enemy.FacingRight = not Enemy.FacingRight           # Use not operator to invert boolean
+            
+
 
 
         # Resetting 'on left' and 'on right' attributes when player stops or moves in opposite direction
@@ -223,8 +225,10 @@ class Level:
                     sprite.FrameIndex = 0
 
                 # Kill player if they land on a set of spikes, or other damaging block
-                if sprite.type == 'Damaging':
+                if sprite.type == 'Damaging' or sprite.type == 'Enemy':
                     player.PlayerDeath()
+                    if sprite.type == 'Enemy':
+                        sprite.Status = 'Attack'
 
                 # Bounce player if they hit a spring
                 if sprite.type == 'Spring':
@@ -253,13 +257,13 @@ class Level:
                 # PLAYER Y COLLISION CHECKS:
 
                 # If it is none of the above, and it is not a platform then keep them on top of the tile
-                elif player.Direction.y > 0 and (sprite.type != 'Platform' or player.OnPlatform):
+                elif player.Direction.y > 0 and (sprite.type == 'Normal' or player.OnPlatform):
                     player.rect.bottom = sprite.rect.top
                     player.Direction.y = 0
                     player.IsJumping = False
                     player.OnGround = True
                 # If the player hits their head, then reset direction and set on ceiling to true
-                elif player.Direction.y < 0 and sprite.type != 'Platform':
+                elif player.Direction.y < 0 and sprite.type == 'Normal':
                     player.rect.top = sprite.rect.bottom
                     player.Direction.y = 0
                     player.OnCeiling = True
@@ -300,7 +304,7 @@ class Level:
 
     def CheckResetLevel(self, player):
         # Check for the player to have died, and finished their death animation before resetting level and player
-        if player.Status == 'Death' and int(player.FrameIndex) == len(player.Animation) - 1:
+        if player.Status == 'Death' and (int(player.FrameIndex) == len(player.Animation) - 1):
             
             player.FrameIndex = len(player.Animation) - 1
 
@@ -309,11 +313,6 @@ class Level:
             background.ResetLevel(self.DistanceMovedX)
             for tile in self.tiles:
                 tile.ResetLevel(self.DistanceMovedX)
-            
-            # Reset enemies
-            for Enemy in self.enemies:
-                print("Move enemy by", self.DistanceMovedX)
-                Enemy.ResetLevel(self.DistanceMovedX)
             
             # Reset distance moved by player (when hitting the barrier)
             self.DistanceMovedX = 0
@@ -339,9 +338,7 @@ class Level:
                         player.FrameIndex = 0
                         player.rect = player.image.get_rect(topleft = player.RespawnPoint)
                         player.Alive = True
-            
-            
-             
+               
     def UpdateTimer(self, DisableTimer):
         # Update timer by subtracting current time from level start time
         ElapsedTime = time.time() - self.LevelStartTime
@@ -377,13 +374,12 @@ class Level:
 
         # --- Animation ---
 
-        # - Enemies -
-        for Enemy in self.enemies:
-            Enemy.update(self.WorldShiftX)
-            self.display_surface.blit(Enemy.image, (Enemy.rect.x, Enemy.rect.y))
-
         # - Objects -
-        self.AnimatedObjects.draw(self.display_surface)    
+        self.AnimatedObjects.draw(self.display_surface)   
+
+        # - Enemies -
+        for Enemy in self.enemies:          # We are not adding enemies to self.animated objects because we want them to render on top of objects such as springs and portals
+            self.display_surface.blit(Enemy.image, (Enemy.rect.x, Enemy.rect.y))
 
         # Check that the portal isnt warping before changing the player or scrolling the world
         if self.portal.Status != 'Warp':

@@ -59,15 +59,15 @@ class AnimatedObject(Tile):
 
 # Parent Class for each enemy
 class Enemy(AnimatedObject):
-    def __init__(self, Animations, AnimationsPath, Speed, SpawnPoint, Size, TileSize):
+    def __init__(self, AnimationsPath, Speed, SpawnPoint, Size, TileSize):
         AnimSpeed = 0.15
-        type = 'Damaging'
+        type = 'Enemy'
+        Animations = {'Attack':[], 'Idle':[]}
         super().__init__(SpawnPoint, Size, TileSize, AnimSpeed, type, Animations, AnimationsPath)
         # Enemy's Attributes
         self.Speed = Speed
         self.Gravity = 10
         self.FacingRight = True
-
 
     def Death(self):
         self.kill()
@@ -77,6 +77,8 @@ class Enemy(AnimatedObject):
         if self.Status != self.PreviousStatus:
             self.PreviousStatus = self.Status
             self.FrameIndex = 0
+
+        
 
         Animation = self.Animations[self.Status]
         self.Animation = Animation 
@@ -92,36 +94,33 @@ class Enemy(AnimatedObject):
             self.image = AnimFrame
         else:
             self.image = pygame.transform.flip(AnimFrame, True, False)          # We want to flip in the x axis, but not the y axis
-
+            
+        self.rect = self.image.get_rect(midbottom = self.rect.midbottom)
 
 # First type of enemy
 class BlindingSpider(Enemy):
     def __init__(self, SpawnPoint, TileSize):
         Speed = 3
         Size = (36,32)
-        Animations = {'Attack':[], 'Idle':[]}
         AnimationsPath = 'SpriteSheets/Enemies/Blinding Spider/'
-        super().__init__(Animations, AnimationsPath, Speed, SpawnPoint, Size, TileSize)
+        super().__init__(AnimationsPath, Speed, SpawnPoint, Size, TileSize)
 
 # Second type of enemy
 class FlowerEnemy(Enemy):
     def __init__(self, SpawnPoint, TileSize):
         Speed = 0.7
         Size =()####################
-        Animations = {'Attack':[], 'Idle':[]}
         AnimationsPath = 'SpriteSheets/Enemies/Flower Enemy/'
-        super().__init__(Animations, AnimationsPath, Speed, SpawnPoint, Size, TileSize)
+        super().__init__(AnimationsPath, Speed, SpawnPoint, Size, TileSize)
 
 # Third type of enemy
 class WheelBot(Enemy):
     def __init__(self, SpawnPoint, TileSize):
         Speed = 0.7
         Size = ()###################
-        Animations = {'Attack':[], 'Idle':[]}
         AnimationsPath = 'SpriteSheets/Enemies/Wheel Bot/'
-        super().__init__(Animations, AnimationsPath, Speed, SpawnPoint, Size, TileSize)
+        super().__init__(AnimationsPath, Speed, SpawnPoint, Size, TileSize)
     
-
 
 # --- General Animated Objects ---
 
@@ -203,17 +202,17 @@ class Spring(AnimatedObject):
 
 # Golden Gear
 class GoldenGear(AnimatedObject):
-    def __init__(self, pos, size, TileSize, type):
+    def __init__(self, pos, size, TileSize, type, ToMove):
         Animations = {'Idle':[]}
         Path = 'SpriteSheets/AnimatedObjects/Golden Gear/'
         super().__init__(pos, size, TileSize, 0, type, Animations, Path)     # Run the initialisation routine of Animated object (and hence tile)
 
         # Set attributes
         InitialYPos = self.rect.y
-        self.UpperBound = InitialYPos - 64
-        self.LowerBound = InitialYPos
+        self.UpperBound = InitialYPos
+        self.LowerBound = InitialYPos + ToMove
         self.Y_ToMove = 0
-        self.MoveUp = True
+        self.MoveUp = False
 
     def Animate(self):
         # Coin floats up and down, so shift y pos up to a certain point, then back down
