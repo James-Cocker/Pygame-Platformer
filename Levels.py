@@ -20,7 +20,6 @@ class Level:
         self.CurrentLevelNum = CurrentLevelNum
         self.ProgrammerMode = ProgrammerMode
         
-        
         # Setup Level
         self.setup_level(level_data)
 
@@ -53,7 +52,10 @@ class Level:
         RespawnBlock = 305
         PortalBlock = 322
         BlindingSpiderEnemy = 290
+        InvisibleEnemyBlock = 286
         goldengear = 307
+        PlayerSpawn = 285
+        
         
         self.RespawnReached = 0
         self.RespawnPointLocations = []                 # Variable to store the x and y position of each respawn point
@@ -81,6 +83,9 @@ class Level:
                 CurrentValue = int(Column)
 
                 if CurrentValue == NormalBlock:
+                    tile = Tile((x,y),(TileSize,TileSize), TileSize, 'Normal')        
+                    self.tiles.add(tile)
+                if CurrentValue == InvisibleEnemyBlock:
                     tile = Tile((x,y),(TileSize,TileSize), TileSize, 'Normal')        
                     self.tiles.add(tile)
                 elif CurrentValue in DamagingBlocks:
@@ -113,7 +118,8 @@ class Level:
                     self.GoldenGear = tile
                     self.tiles.add(tile)
                     self.AnimatedObjects.add(tile)
-                elif CurrentValue == 1000:
+                elif CurrentValue == PlayerSpawn:
+                    print("Make Player")
                     PlayerSprite = Player((x, y))
                     self.player.add(PlayerSprite)
 
@@ -313,7 +319,7 @@ class Level:
                     break
 
                 # Reset Player
-                if int(RespawnPointNum.FrameIndex) == len(RespawnPointNum.Animation) - 1:
+                if RespawnPointNum.Status == 'Startup' and (int(RespawnPointNum.FrameIndex) == len(RespawnPointNum.Animation) - 2):
                     player.Direction.y = 0
                     RespawnPointNum.Status = 'Idle'
                     player.FrameIndex = 0
