@@ -11,20 +11,14 @@ class Tile(pygame.sprite.Sprite):           # Used to create a template for each
         self.rect = self.image.get_rect(midbottom = (pos[0]+(size[0]/2), pos[1]+(TileSize)))             # Give the rectangle for the surface the same dimensions as the image, where pos is a tuple for the top left 
                                                                                                          # of the image. I have chosen to force this into being the 'midbottom' as when the class is inherited from 
                                                                                                          # animated objects, not all objects are the same height and width (e.g spring).
-        # If deciding to draw the abstract levd2424el, the different blocks are colour coded as such
+        # If deciding to draw the abstract level, the different blocks are colour coded as such
         if type == 'Normal':
             self.image.fill('Gray')
         elif type == 'Damaging':
             self.image.fill('Red')
         elif type == 'Platform':
             self.image.fill('Blue')
-        # Uncomment this, and comment out the filling of images for programmer mode including the animated objects
-        # elif type == 'Spring':
-        #     self.image.fill('Yellow')
-        # elif type == 'Respawn':
-        #     self.image.fill('Orange')
-        # elif type == 'Portal':
-        #     self.image.fill('Green')
+
 
     # Will reset level upon player death
     def ResetLevel(self, XOffset):

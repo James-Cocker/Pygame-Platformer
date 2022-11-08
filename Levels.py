@@ -119,14 +119,15 @@ class Level:
                     self.tiles.add(tile)
                     self.AnimatedObjects.add(tile)
                 elif CurrentValue == PlayerSpawn:
-                    print("Make Player")
                     PlayerSprite = Player((x, y))
                     self.player.add(PlayerSprite)
+
 
         self.RespawnPointLocations.sort(key=lambda key:key[0])          # Sort respawn point locations by their x value, then set them IDs. This is because the player will always move through the level left to right,
                                                                         # so the first respawn point will always be the leftmost one
 
         # Allows for a max of 5 respawn points (not flexible, but a for or while loop is unessesary)
+        
         for RespawnPointNum in self.RespawnPoints:
             if RespawnPointNum.rect.x == self.RespawnPointLocations[0][0]:
                 RespawnPointNum.ID = 1
@@ -311,20 +312,29 @@ class Level:
             for Enemy in self.enemies:
                 Enemy.ResetLevel(self.DistanceMovedX)
             
-            # Start the startup animation of the respawn point
-            for RespawnPointNum in self.RespawnPoints:
-                if RespawnPointNum.ID == self.RespawnReached and RespawnPointNum.Status != 'Startup':
-                    RespawnPointNum.Status = 'Startup'
-                    RespawnPointNum.FrameIndex = 0
-                    break
+            # Reset Player if they havent hit a respawn point
+            if self.RespawnReached == 0:
+                player.Direction.y = 0
+                player.FrameIndex = 0
+                player.rect = player.image.get_rect(topleft = player.RespawnPoint)
+                player.Alive = True
+            else:
+                # Start the startup animation of the respawn point
+                for RespawnPointNum in self.RespawnPoints:
+                    if RespawnPointNum.ID == self.RespawnReached and RespawnPointNum.Status != 'Startup':
+                        RespawnPointNum.Status = 'Startup'
+                        RespawnPointNum.FrameIndex = 0
+                        break
 
-                # Reset Player
-                if RespawnPointNum.Status == 'Startup' and (int(RespawnPointNum.FrameIndex) == len(RespawnPointNum.Animation) - 2):
-                    player.Direction.y = 0
-                    RespawnPointNum.Status = 'Idle'
-                    player.FrameIndex = 0
-                    player.rect = player.image.get_rect(topleft = player.RespawnPoint)
-                    player.Alive = True
+                    # Reset Player
+                    if RespawnPointNum.Status == 'Startup' and (int(RespawnPointNum.FrameIndex) == len(RespawnPointNum.Animation) - 2):
+                        RespawnPointNum.Status = 'Idle'
+                        player.Direction.y = 0
+                        player.FrameIndex = 0
+                        player.rect = player.image.get_rect(topleft = player.RespawnPoint)
+                        player.Alive = True
+            
+            
              
     def UpdateTimer(self, DisableTimer):
         # Update timer by subtracting current time from level start time
@@ -350,8 +360,6 @@ class Level:
             self.background.update(self.WorldShiftX)
             self.background.draw(self.display_surface)
 
-        self.AnimatedObjects.draw(self.display_surface)    
-
 
         # --- Check for End of Game ---
 
@@ -363,13 +371,13 @@ class Level:
 
         # --- Animation ---
 
-        # Enemies
+        # - Enemies -
         for Enemy in self.enemies:
             Enemy.update(self.WorldShiftX)
             self.display_surface.blit(Enemy.image, (Enemy.rect.x, Enemy.rect.y))
 
-
-        # --- World shifting and Player ---
+        # - Objects -
+        self.AnimatedObjects.draw(self.display_surface)    
 
         # Check that the portal isnt warping before changing the player or scrolling the world
         if self.portal.Status != 'Warp':
