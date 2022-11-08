@@ -1,7 +1,6 @@
 import pygame, time
 from Blocks_And_Objects import *
 from player import Player
-from Enemies import *
 from Menu import *
 from background import Background
 
@@ -111,7 +110,7 @@ class Level:
                     self.tiles.add(tile)
                     self.AnimatedObjects.add(tile)
                 elif CurrentValue == BlindingSpiderEnemy:
-                    enemy = BlindingSpider((x,y))
+                    enemy = BlindingSpider((x,y), TileSize)
                     self.enemies.add(enemy)
                 elif CurrentValue == goldengear:
                     tile = GoldenGear((x,y), (48,48), TileSize, 'GoldenGear')
@@ -192,8 +191,12 @@ class Level:
                 # Enemy x collision
                 for Enemy in self.enemies:
                     if sprite.rect.colliderect(Enemy.rect):
-                        Enemy.rect.right = sprite.rect.left
+                        if Enemy.FacingRight:
+                            Enemy.rect.right = sprite.rect.left
+                        else:
+                            Enemy.rect.left = sprite.rect.right
                         Enemy.FacingRight = not Enemy.FacingRight           # Use not operator to invert boolean
+
 
         # Resetting 'on left' and 'on right' attributes when player stops or moves in opposite direction
         if player.OnLeft and (player.rect.left < self.CurrentX or player.Direction.x >= 0):
@@ -274,7 +277,7 @@ class Level:
                 if sprite.rect.colliderect(Enemy.rect):
                     if sprite.type == 'Damaging':
                         Enemy.Death()
-                    elif sprite.type ==  'Normal':
+                    elif sprite.type == 'Normal':
                         Enemy.rect.bottom = sprite.rect.top
 
         
@@ -306,11 +309,14 @@ class Level:
             background.ResetLevel(self.DistanceMovedX)
             for tile in self.tiles:
                 tile.ResetLevel(self.DistanceMovedX)
-            self.DistanceMovedX = 0
-
+            
             # Reset enemies
             for Enemy in self.enemies:
+                print("Move enemy by", self.DistanceMovedX)
                 Enemy.ResetLevel(self.DistanceMovedX)
+            
+            # Reset distance moved by player (when hitting the barrier)
+            self.DistanceMovedX = 0
             
             # Reset Player if they havent hit a respawn point
             if self.RespawnReached == 0:

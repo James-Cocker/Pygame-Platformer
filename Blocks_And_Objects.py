@@ -1,7 +1,7 @@
 import pygame
 from Support import ImportFolder
 
-
+# The parent class for each class in this file
 class Tile(pygame.sprite.Sprite):           # Used to create a template for each tile, inherit from the parent class 'Sprite'
     def __init__(self,pos,size,TileSize,type):       # position, tile size
         super().__init__()                  # Run the initialisation routine of pygame's parent class
@@ -28,19 +28,17 @@ class Tile(pygame.sprite.Sprite):           # Used to create a template for each
     def update(self,XShift):
         self.rect.x += XShift
 
-
+# Parent class for 'enemy' and the other objects such as 'respawn point'
 class AnimatedObject(Tile):
     def __init__(self,pos,size,TileSize,AnimSpeed,type,Animations,FullPath):        # position, tile size
         super().__init__(pos,size,TileSize,type)                  # Run the initialisation routine of pygame's parent class
 
         self.Animations = Animations            # Set arrays for each animation state
         self.ImportAssets(FullPath)
-        self.ID = 0                         # Where ID is the number of the respawn point
         self.Status = 'Idle'
         self.PreviousStatus = 'Idle'
         self.FrameIndex = 0
         self.AnimationSpeed = AnimSpeed
-        self.Saving = False
         self.image = self.Animations['Idle'][self.FrameIndex]                # Fill the surface with the animation frame 'idle'
         self.rect = self.image.get_rect(midbottom = self.rect.midbottom)                # Give the rectangle for the surface the same dimensions as the image
 
@@ -57,6 +55,77 @@ class AnimatedObject(Tile):
         self.Animate()          # Each class has unique animation routines, hence no need to define it and for it to be overriden in each instance of the class
 
 
+# --- Enemies ---
+
+# Parent Class for each enemy
+class Enemy(AnimatedObject):
+    def __init__(self, Animations, AnimationsPath, Speed, SpawnPoint, Size, TileSize):
+        AnimSpeed = 0.15
+        type = 'Damaging'
+        super().__init__(SpawnPoint, Size, TileSize, AnimSpeed, type, Animations, AnimationsPath)
+        # Enemy's Attributes
+        self.Speed = Speed
+        self.Gravity = 10
+        self.FacingRight = True
+
+
+    def Death(self):
+        self.kill()
+
+    def Animate(self):
+        # Reset frame index when switching animation statuses
+        if self.Status != self.PreviousStatus:
+            self.PreviousStatus = self.Status
+            self.FrameIndex = 0
+
+        Animation = self.Animations[self.Status]
+        self.Animation = Animation 
+
+        # Loop over frame index
+        self.FrameIndex += self.AnimationSpeed
+        if self.FrameIndex >= len(Animation):
+            self.FrameIndex = 0
+
+        # Set enemy's image and rect
+        AnimFrame = Animation[int(self.FrameIndex)]
+        if self.FacingRight:
+            self.image = AnimFrame
+        else:
+            self.image = pygame.transform.flip(AnimFrame, True, False)          # We want to flip in the x axis, but not the y axis
+
+
+# First type of enemy
+class BlindingSpider(Enemy):
+    def __init__(self, SpawnPoint, TileSize):
+        Speed = 3
+        Size = (36,32)
+        Animations = {'Attack':[], 'Idle':[]}
+        AnimationsPath = 'SpriteSheets/Enemies/Blinding Spider/'
+        super().__init__(Animations, AnimationsPath, Speed, SpawnPoint, Size, TileSize)
+
+# Second type of enemy
+class FlowerEnemy(Enemy):
+    def __init__(self, SpawnPoint, TileSize):
+        Speed = 0.7
+        Size =()####################
+        Animations = {'Attack':[], 'Idle':[]}
+        AnimationsPath = 'SpriteSheets/Enemies/Flower Enemy/'
+        super().__init__(Animations, AnimationsPath, Speed, SpawnPoint, Size, TileSize)
+
+# Third type of enemy
+class WheelBot(Enemy):
+    def __init__(self, SpawnPoint, TileSize):
+        Speed = 0.7
+        Size = ()###################
+        Animations = {'Attack':[], 'Idle':[]}
+        AnimationsPath = 'SpriteSheets/Enemies/Wheel Bot/'
+        super().__init__(Animations, AnimationsPath, Speed, SpawnPoint, Size, TileSize)
+    
+
+
+# --- General Animated Objects ---
+
+# Portal
 class Portal(AnimatedObject):
     def __init__(self, pos, size, TileSize, type):
         Animations = {'Idle':[], 'Warp':[]}
@@ -77,13 +146,16 @@ class Portal(AnimatedObject):
         self.image = Animation[int(self.FrameIndex)]
         self.rect = self.image.get_rect(midbottom = self.rect.midbottom)
 
-
+# Respawn point
 class RespawnPoint(AnimatedObject):
     def __init__(self, pos, size, TileSize, type):
         Animations = {'Idle':[], 'Saving':[], 'Startup':[]}
         Path = 'SpriteSheets/AnimatedObjects/Save/'
         AnimSpeed = 0.15
         super().__init__(pos, size, TileSize, AnimSpeed, type, Animations, Path)     # Run the initialisation routine of Animated object (and hence tile)
+        # Set attributes of respawn point
+        self.ID = 0                         # Where ID is the number of the respawn point
+        self.Saving = False
 
     def Animate(self):
         # If we have swapped to a new status, set animation speed (back) to default and frame index to 0
@@ -105,7 +177,7 @@ class RespawnPoint(AnimatedObject):
         self.image = Animation[int(self.FrameIndex)]
         self.rect = self.image.get_rect(midbottom = self.rect.midbottom)
 
-
+# Spring
 class Spring(AnimatedObject):
     def __init__(self, pos, size, TileSize, type):
         Animations = {'Idle':[], 'Bounce':[]}
@@ -129,7 +201,7 @@ class Spring(AnimatedObject):
             self.Animation = self.Animations[self.Status] 
             self.image = self.Animation[self.FrameIndex]
 
-
+# Golden Gear
 class GoldenGear(AnimatedObject):
     def __init__(self, pos, size, TileSize, type):
         Animations = {'Idle':[]}
