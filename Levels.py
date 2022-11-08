@@ -2,6 +2,7 @@ import pygame, time
 from Blocks_And_Objects import *
 from player import Player
 from Menu import *
+from Sounds import *
 from background import Background
 
 # Set constants
@@ -12,12 +13,16 @@ TileSize = 64
 # Creating the call that will be used for each level
 class Level:
     # Creating an initialisation routine
-    def __init__(self, level_data, surface, CurrentLevelNum, ProgrammerMode, InGameMenu, ToDisableTimer):
+    def __init__(self, level_data, surface, CurrentLevelNum, ProgrammerMode, InGameMenu, ToDisableTimer, PlayerLives):
         # Set attributes
         self.TimerFont = pygame.font.SysFont("8-Bit-Madness", 80)
         self.display_surface = surface
         self.CurrentLevelNum = CurrentLevelNum
         self.ProgrammerMode = ProgrammerMode
+
+        # Health bar
+        self.HealthBarImg = pygame.image.load('MenuItems/Health Bar/' + str(PlayerLives) + '.png').convert_alpha()
+        self.PlayerLives = PlayerLives
         
         # Setup Level
         self.setup_level(level_data)
@@ -197,9 +202,6 @@ class Level:
                             Enemy.rect.left = sprite.rect.right
                         Enemy.FacingRight = not Enemy.FacingRight           # Use not operator to invert boolean
             
-
-
-
         # Resetting 'on left' and 'on right' attributes when player stops or moves in opposite direction
         if player.OnLeft and (player.rect.left < self.CurrentX or player.Direction.x >= 0):
             player.OnLeft = False
@@ -209,6 +211,11 @@ class Level:
     def Y_CollisionCheck(self, player):
         # Apply vertical movement
         player.ApplyGravity()
+
+        # Kill player if too far down in level
+        if player.rect.y > 1000:
+            player.PlayerDeath()
+
 
         # Apply enemies horizontal movement
         for Enemy in self.enemies:
@@ -228,10 +235,12 @@ class Level:
                 if sprite.type == 'Damaging' or sprite.type == 'Enemy':
                     player.PlayerDeath()
                     if sprite.type == 'Enemy':
+                        if sprite.Status != 'Attack': BlindingSpiderAttackSound()           # As to only play the sound once
                         sprite.Status = 'Attack'
 
                 # Bounce player if they hit a spring
                 if sprite.type == 'Spring':
+                    PlaySpringSound()
                     sprite.Status = 'Bounce'
                     player.IsJumping = True
                     player.OnGround = False
@@ -302,6 +311,14 @@ class Level:
         else:
             player.IsFalling = False
 
+    def ChangePlayerLives(self, Amount):
+        if self.PlayerLives > 0 and Amount == -1:
+            self.PlayerLives -= 1
+            PlayerDamagedSound()
+        elif self.PlayerLives < 5 and Amount == 1:
+            self.PlayerLives += 1
+        self.HealthBarImg = pygame.image.load('MenuItems/Health Bar/' + str(self.PlayerLives) + '.png').convert_alpha()
+
     def CheckResetLevel(self, player):
         # Check for the player to have died, and finished their death animation before resetting level and player
         if player.Status == 'Death' and (int(player.FrameIndex) == len(player.Animation) - 1):
@@ -319,6 +336,7 @@ class Level:
             
             # Reset Player if they havent hit a respawn point
             if self.RespawnReached == 0:
+                self.ChangePlayerLives(-1)
                 player.Direction.y = 0
                 player.FrameIndex = 0
                 player.rect = player.image.get_rect(topleft = player.RespawnPoint)
@@ -333,6 +351,7 @@ class Level:
 
                     # Reset Player
                     if RespawnPointNum.Status == 'Startup' and (int(RespawnPointNum.FrameIndex) == len(RespawnPointNum.Animation) - 2):
+                        self.ChangePlayerLives(-1)
                         RespawnPointNum.Status = 'Idle'
                         player.Direction.y = 0
                         player.FrameIndex = 0
@@ -429,6 +448,9 @@ class Level:
         self.UpdateTimer(self.ToDisableTimer)
             
 
+        # Display health bar
+        self.display_surface.blit(self.HealthBarImg, (50, 0))   #(ScreenWidth - 500, ScreenHeight - 120)
+
         # Display golden gear if collected
         if self.CollectedGoldenGear:
-            self.display_surface.blit(self.GoldenGearImg, (ScreenWidth - 100, ScreenHeight - 100))
+            self.display_surface.blit(self.GoldenGearImg, (ScreenWidth - 50, ScreenHeight - 50))

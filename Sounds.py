@@ -6,4 +6,21 @@ def PlayClickSound():
 
 def PlayGoldenGearCollection():
     pygame.mixer.Channel(1).play(pygame.mixer.Sound('Sounds/Golden Gear.wav'))
-    # pygame.mixer.Channel(0).play(pygame.mixer.Sound('Sounds/Golden Gear.mp3'))
+
+def PlayerDamagedSound():
+    pygame.mixer.Channel(2).play(pygame.mixer.Sound('Sounds/Damaged.wav'))
+
+def VolumeClickSound():
+    pygame.mixer.Channel(3).play(pygame.mixer.Sound('Sounds/VolClick.wav'))
+
+def PlayerJumpSound():
+    pygame.mixer.Channel(4).play(pygame.mixer.Sound('Sounds/Jump.wav'))
+
+def BlindingSpiderAttackSound():
+    pygame.mixer.Channel(5).play(pygame.mixer.Sound('Sounds/Blinding Spider Attack.wav'))
+
+def PlaySpringSound():
+    pygame.mixer.Channel(6).play(pygame.mixer.Sound('Sounds/Spring.wav'))
+
+# def PlayGoldenGearCollection():
+#     pygame.mixer.Channel(7).play(pygame.mixer.Sound('Sounds/Golden Gear.wav'))

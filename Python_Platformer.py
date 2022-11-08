@@ -43,19 +43,21 @@ mixer.music.load('MenuItems/BackgroundMusic.mp3')
 mixer.music.set_volume(0.2)
 mixer.music.play()  
 
+# Set player lives - This is not done in 'player' or 'Levels' as the player should retain their number of lives through the entire playthrough (they are never reset back to 5)
+PlayerLives = 5
+
 # Routine to load and return the next level automatically after the prvious has been completed
-def MoveToNextLevel(CurrentLevelNum, TempToDisableTimer):
+def MoveToNextLevel(CurrentLevelNum, TempToDisableTimer, PlayerLives):
     CurrentLevelNum += 1
     CSVPath = 'Levels/Level ' + str(CurrentLevelNum) + '/Level ' + str(CurrentLevelNum) + '.csv'
-    return Level(ImportCSV(CSVPath), screen, CurrentLevelNum, ProgrammerMode, InGameMenu, TempToDisableTimer), CurrentLevelNum
+    return Level(ImportCSV(CSVPath), screen, CurrentLevelNum, ProgrammerMode, InGameMenu, TempToDisableTimer, PlayerLives), CurrentLevelNum
 
 # Create Menu (only needs to be created once each time the program is loaded - a new menu is not needed for each level)
 InGameMenu = CreateInGameMenu((300,100), screen)
 
 # Giving the main file acess to the class Level
-ProgrammerMode = False          # Set to true if you would like to see world as the basic rectangles the computer sees 
-CurrentLevel = Level(ImportCSV('Levels/Level 0/Level 0.csv'), screen, CurrentLevelNum, ProgrammerMode, InGameMenu, False)
-
+ProgrammerMode = False          # Set to true if you would like to see world as the basic rectangles the computer sees
+CurrentLevel = Level(ImportCSV('Levels/Level 0/Level 0.csv'), screen, CurrentLevelNum, ProgrammerMode, InGameMenu, False, PlayerLives)
 
 # In-game infinite loop
 while True:
@@ -78,7 +80,8 @@ while True:
         CurrentLevel.run()               
     else:
         TempToDisableTimer = CurrentLevel.ToDisableTimer
-        CurrentLevel, CurrentLevelNum = MoveToNextLevel(CurrentLevelNum, TempToDisableTimer)
+        PlayerLives = CurrentLevel.PlayerLives
+        CurrentLevel, CurrentLevelNum = MoveToNextLevel(CurrentLevelNum, TempToDisableTimer, PlayerLives)
 
     # Update the screen and keep the frame rate at 60
     pygame.display.update()

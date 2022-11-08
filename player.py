@@ -1,5 +1,6 @@
 import pygame
 from Support import ImportFolder
+from Sounds import *
 
 
 class Player(pygame.sprite.Sprite):
@@ -95,6 +96,7 @@ class Player(pygame.sprite.Sprite):
 
         # Test if player is jumping
         if Key[pygame.K_SPACE] and self.IsJumping == False and self.IsFalling == False:
+            PlayerJumpSound()
             self.IsJumping = True
             self.Jump(self.JumpSpeed)
 
@@ -120,10 +122,6 @@ class Player(pygame.sprite.Sprite):
         # Add gravity onto the player
         self.Direction.y += self.Gravity
         self.rect.y += self.Direction.y
-
-        # Kill player if too far down in level
-        if self.rect.y > 1000:
-            self.PlayerDeath()
 
     def PlayerDeath(self):
         # Set player death

@@ -102,11 +102,13 @@ class Button(pygame.sprite.Sprite):
                     # Turn music down by 0.1
                     Volume -= 0.1
                     RecordedVolume = Volume
+                    VolumeClickSound()
 
                 elif self.Name == 'ArrowUp' and Volume <= 0.9 and Volume != -1:
                     # Turn music up by 0.1
                     Volume += 0.1
                     RecordedVolume = Volume
+                    VolumeClickSound()
                     
                 elif self.Name == 'Volume':
                     # Mute music
@@ -144,7 +146,6 @@ class Button(pygame.sprite.Sprite):
                 # Check if volume has been set to off
                 if Volume == -1:
                     mixer.music.set_volume(0)
-                    mixer.music.Channel(1).set_volume(0)
                 # Otherwise set volume to new volume
                 else:
                     mixer.music.set_volume(Volume)
