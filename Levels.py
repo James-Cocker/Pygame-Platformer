@@ -21,15 +21,14 @@ class Level:
         self.ProgrammerMode = ProgrammerMode
 
         # Health Bar
-        print(PlayerLivesAndAbilities)
         self.PlayerLives = PlayerLivesAndAbilities[0]
         self.HealthBarImg = pygame.image.load('MenuItems/Health Bar/' + str(self.PlayerLives) + '.png').convert_alpha()
 
         # Player Abilities
-        self.PlayerLivesAndAbilities = PlayerLivesAndAbilities
-        self.SpacePressed = False
-        self.PlayerDoubleJump = PlayerLivesAndAbilities[1]
-        self.PlayerDash = PlayerLivesAndAbilities[2]
+        self.SpacePressed = False           # Used to get the keydown for space, when user presses double jump
+        self.PlayerLivesAndAbilities = PlayerLivesAndAbilities          # An array in the form [ No. of lives (between 1 and 5), double jump collected?, dash collected? ]
+        #self.PlayerDoubleJump = PlayerLivesAndAbilities[1]
+        #self.PlayerDash = PlayerLivesAndAbilities[2]
         
         # Setup Level
         self.setup_level(level_data)
@@ -66,6 +65,8 @@ class Level:
         InvisibleEnemyWall = 286
         goldengear = 307
         PlayerSpawn = 285
+        doublejump = 287
+        dash = 288
         
         self.RespawnReached = 0
         self.RespawnPointLocations = []                 # Variable to store the x and y position of each respawn point
@@ -129,8 +130,18 @@ class Level:
                     self.GoldenGear = tile
                     self.tiles.add(tile)
                     self.AnimatedObjects.add(tile)
+                elif CurrentValue == doublejump:
+                    print("Make double jump")
+                    tile = DoubleJump((x,y), (64,58), TileSize, 'DoubleJump', 30)
+                    self.tiles.add(tile)
+                    self.AnimatedObjects.add(tile)
+                elif CurrentValue == dash:
+                    print("Make dash")
+                    tile = Dash((x,y), (46,38), TileSize, 'Dash', 30)
+                    self.tiles.add(tile)
+                    self.AnimatedObjects.add(tile)
                 elif CurrentValue == PlayerSpawn:
-                    PlayerSprite = Player((x, y), self.PlayerDoubleJump, self.PlayerDash)
+                    PlayerSprite = Player((x, y), self.PlayerLivesAndAbilities[1], self.PlayerLivesAndAbilities[2])
                     self.player.add(PlayerSprite)
 
 
@@ -268,6 +279,18 @@ class Level:
                 elif sprite.type == 'GoldenGear':
                     PlayGoldenGearCollection()
                     self.CollectedGoldenGear = True
+                    sprite.kill()
+
+                elif sprite.type == 'DoubleJump':
+                    PlayGoldenGearCollection()
+                    self.PlayerLivesAndAbilities[1] = True          # An array in the form [ No. of lives (between 1 and 5), double jump collected?, dash collected? ]
+                    player.ObtainedDoubleJump = True
+                    sprite.kill()
+
+                elif sprite.type == 'Dash':
+                    PlayGoldenGearCollection()
+                    self.PlayerLivesAndAbilities[2] = True          # An array in the form [ No. of lives (between 1 and 5), double jump collected?, dash collected? ]
+                    player.ObtainedDash = True
                     sprite.kill()
                 
 

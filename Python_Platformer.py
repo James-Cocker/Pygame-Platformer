@@ -14,6 +14,8 @@ Clock = pygame.time.Clock()
 
 # Set current level to intro (0th level)
 CurrentLevelNum = 0
+NumberOfLastLevel = 1
+GameWon = False
 
 # Player background game music
 mixer.music.load('MenuItems/BackgroundMusic.mp3')
@@ -22,10 +24,11 @@ mixer.music.play()
 
 # Set player lives and abilities - This is not done in 'player' or 'Levels' as the player should retain their number of lives through the entire playthrough (they are never reset back to 5)
 # This is in the format [ No. of lives (between 1 and 5), double jump collected?, dash collected? ]
-PlayerLivesAndAbilities = [5, True, True]
+PlayerLivesAndAbilities = [5, False, True]
 
 # Routine to load and return the next level automatically after the prvious has been completed
-def MoveToNextLevel(CurrentLevelNum, TempToDisableTimer, PlayerLivesAndAbilities):
+def MoveToNextLevel(CurrentLevelNum, PlayerLivesAndAbilities):
+    TempToDisableTimer = CurrentLevel.ToDisableTimer
     CurrentLevelNum += 1
     CSVPath = 'Levels/Level ' + str(CurrentLevelNum) + '/Level ' + str(CurrentLevelNum) + '.csv'
     return Level(ImportCSV(CSVPath), screen, CurrentLevelNum, ProgrammerMode, InGameMenu, TempToDisableTimer, PlayerLivesAndAbilities), CurrentLevelNum
@@ -59,10 +62,11 @@ while True:
     # Running the next level when the player compltes the first one
     if CurrentLevel.FinishedLevel == False:
         CurrentLevel.run()               
+    elif CurrentLevelNum < NumberOfLastLevel:
+        CurrentLevel, CurrentLevelNum = MoveToNextLevel(CurrentLevelNum, PlayerLivesAndAbilities)
     else:
-        TempToDisableTimer = CurrentLevel.ToDisableTimer
-        PlayerLives = CurrentLevel.PlayerLives
-        CurrentLevel, CurrentLevelNum = MoveToNextLevel(CurrentLevelNum, TempToDisableTimer, PlayerLives)
+        # Display winning screen and return back to menu
+        break
 
     # Update the screen and keep the frame rate at 60
     pygame.display.update()
