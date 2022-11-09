@@ -122,6 +122,56 @@ class WheelBot(Enemy):
         super().__init__(AnimationsPath, Speed, SpawnPoint, Size, TileSize)
     
 
+# --- Collectable Items ---
+
+# Parent class for each item
+class CollectableItem(AnimatedObject):
+    def __init__(self, pos, size, TileSize, type, ToMove, Path):
+        Animations = {'Idle':[]}
+        super().__init__(pos, size, TileSize, 0, type, Animations, Path)     # Run the initialisation routine of Animated object (and hence tile)
+
+        # Set attributes
+        InitialYPos = self.rect.y
+        self.UpperBound = InitialYPos
+        self.LowerBound = InitialYPos + ToMove
+        self.MoveUp = False
+
+    def Animate(self):
+
+        # Object floats up and down, so shift y pos up to a certain point, then back down
+        self.rect = self.image.get_rect(center = self.rect.center)                # Give the rectangle for the surface the same dimensions as the image
+        
+        YPos = self.rect.y
+        
+        if self.MoveUp:
+            self.rect.y -= 1
+            if YPos < self.UpperBound:
+                self.MoveUp = False
+        else:
+            self.rect.y += 1
+            if YPos > self.LowerBound:
+                self.MoveUp = True
+
+# Golden Gear
+class GoldenGear(CollectableItem):
+    def __init__(self, pos, size, TileSize, type, ToMove):
+        Path = 'SpriteSheets/AnimatedObjects/Golden Gear/'
+        super().__init__(pos, size, TileSize, type, ToMove, Path)     # Run the initialisation routine of Animated object (and hence tile)
+
+# Double Jump
+class DoubleJump(CollectableItem):
+    def __init__(self, pos, size, TileSize, type, ToMove):
+        Path = 'SpriteSheets/AnimatedObjects/Double Jump/'
+        super().__init__(pos, size, TileSize, type, ToMove, Path)     # Run the initialisation routine of Animated object (and hence tile)
+
+# Dash
+class Dash(CollectableItem):
+    def __init__(self, pos, size, TileSize, type, ToMove):
+        Path = 'SpriteSheets/AnimatedObjects/Dash/'
+        super().__init__(pos, size, TileSize, type, ToMove, Path)     # Run the initialisation routine of Animated object (and hence tile)
+
+
+
 # --- General Animated Objects ---
 
 # Portal
@@ -200,31 +250,5 @@ class Spring(AnimatedObject):
             self.Animation = self.Animations[self.Status] 
             self.image = self.Animation[self.FrameIndex]
 
-# Golden Gear
-class GoldenGear(AnimatedObject):
-    def __init__(self, pos, size, TileSize, type, ToMove):
-        Animations = {'Idle':[]}
-        Path = 'SpriteSheets/AnimatedObjects/Golden Gear/'
-        super().__init__(pos, size, TileSize, 0, type, Animations, Path)     # Run the initialisation routine of Animated object (and hence tile)
 
-        # Set attributes
-        InitialYPos = self.rect.y
-        self.UpperBound = InitialYPos
-        self.LowerBound = InitialYPos + ToMove
-        self.Y_ToMove = 0
-        self.MoveUp = False
 
-    def Animate(self):
-        # Coin floats up and down, so shift y pos up to a certain point, then back down
-        self.rect = self.image.get_rect(center = self.rect.center)                # Give the rectangle for the surface the same dimensions as the image
-        
-        YPos = self.rect.y
-        
-        if self.MoveUp:
-            self.rect.y -= 1
-            if YPos < self.UpperBound:
-                self.MoveUp = False
-        else:
-            self.rect.y += 1
-            if YPos > self.LowerBound:
-                self.MoveUp = True
