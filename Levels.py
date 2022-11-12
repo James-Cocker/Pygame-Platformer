@@ -171,14 +171,11 @@ class Level:
         MinPlayerX = 450
         MaxPlayerX = ScreenWidth - MinPlayerX
 
-        if (player_x >= MaxPlayerX + 20): print("Out of bounds")
-
         # Checking if the player is within the border, if not then move the world as such
         if player.Dashing:
             
             if (new_player_x < MinPlayerX) or (new_player_x > MaxPlayerX):
                 self.WorldShiftX = -round(Direction_x) * 7
-                print(self.WorldShiftX)
                 player.PlayerSpeed = 0
 
         else:

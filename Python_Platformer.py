@@ -24,7 +24,7 @@ mixer.music.play()
 
 # Set player lives and abilities - This is not done in 'player' or 'Levels' as the player should retain their number of lives through the entire playthrough (they are never reset back to 5)
 # This is in the format [ No. of lives (between 1 and 5), double jump collected?, dash collected? ]
-PlayerLivesAndAbilities = [5, False, True]
+PlayerLivesAndAbilities = [5, False, False]
 
 # Routine to load and return the next level automatically after the prvious has been completed
 def MoveToNextLevel(CurrentLevelNum, PlayerLivesAndAbilities):
