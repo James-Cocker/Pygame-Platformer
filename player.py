@@ -26,7 +26,7 @@ class Player(pygame.sprite.Sprite):
         self.JumpSpeed = -17
         self.Gravity = 0.9
         self.DashCooldown = 0.4             # Time between being able to dash is 0.4s
-        self.DashSpeed = 7
+        self.DashSpeed = 5
 
         self.OnPlatform = False
         self.IsJumping = False
@@ -109,6 +109,7 @@ class Player(pygame.sprite.Sprite):
 
         if self.Dashing == False:
             if self.ShiftPressed:
+                self.AnimationSpeed = 0.25
                 self.TestDashing(self.FacingRight)
                 self.ShiftPressed = False
 
@@ -169,7 +170,7 @@ class Player(pygame.sprite.Sprite):
                     self.Status = 'Idle'
             
     def ApplyDash(self):
-        self.DashSlowSpeed = self.Direction.x / 5.5         # Use a recipricol so that the player slows down by a smaller rate over time, instead of a sudden (or linear) stop
+        self.DashSlowSpeed = round(self.Direction.x / 14, 3)         # Use a recipricol so that the player slows down by a smaller rate over time, instead of a sudden (or linear) stop. Round to 3d.p.
         
         if (self.Direction.x > 1 and self.FacingRight) or (self.Direction.x < -1 and self.FacingRight == False):
             self.Direction.x -= self.DashSlowSpeed
@@ -196,5 +197,7 @@ class Player(pygame.sprite.Sprite):
         if self.Alive:
             self.GetInput()
             self.GetStatus()
-            if self.Dashing: self.ApplyDash()
+            if self.Dashing: 
+                self.Status = 'Dash'
+                self.ApplyDash()
         self.Animate() 
