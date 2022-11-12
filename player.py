@@ -1,4 +1,5 @@
-import pygame
+import pygame, time
+from math import trunc
 from pygame import K_SPACE
 from Support import ImportFolder
 from Sounds import *
@@ -16,21 +17,29 @@ class Player(pygame.sprite.Sprite):
 
         # Player Movement
         self.Direction = pygame.math.Vector2(0,0)
+
+        self.SpacePressed = False
+        self.ShiftPressed = False
+
         self.PlayerSpeed = 8
         self.NormalSpeed = self.PlayerSpeed
-        self.Gravity = 0.9
         self.JumpSpeed = -17
+        self.Gravity = 0.9
+        self.DashCooldown = 0.4             # Time between being able to dash is 0.4s
+        self.DashSpeed = 7
+
         self.OnPlatform = False
         self.IsJumping = False
         self.IsFalling = False
+        self.Dashing = False
         self.Alive = True
 
         # Player Abilities
-        self.SpacePressed = False
         self.ObtainedDoubleJump = ObtainedDoubleJump
         self.DoubleJump = ObtainedDoubleJump
         self.ObtainedDash = ObtainedDash
         self.Dash = ObtainedDash
+        self.DashStartTime = 0                                                    
 
         # Player Status
         self.Status = 'Idle'
@@ -97,14 +106,22 @@ class Player(pygame.sprite.Sprite):
     def GetInput(self):
         # Detect whether the player is moving left or right, setting the direction accordingly
         Key = pygame.key.get_pressed()
-        if Key[pygame.K_RIGHT]:
-            self.Direction.x = 1
-            self.FacingRight = True
-        elif Key[pygame.K_LEFT]:
-            self.Direction.x = -1
-            self.FacingRight = False
-        else:
-            self.Direction.x = 0
+
+        if self.Dashing == False:
+            if self.ShiftPressed:
+                self.TestDashing(self.FacingRight)
+                self.ShiftPressed = False
+
+            elif Key[pygame.K_RIGHT]:
+                self.FacingRight = True
+                self.Direction.x = 1
+
+            elif Key[pygame.K_LEFT]:
+                self.FacingRight = False
+                self.Direction.x = -1
+
+            else:
+                self.Direction.x = 0
 
         # Test if player is jumping
         if self.SpacePressed:
@@ -114,12 +131,24 @@ class Player(pygame.sprite.Sprite):
                 PlayerJumpSound()
                 self.IsJumping = True
                 self.Jump(self.JumpSpeed)
-            # See if player is double jumping
+            # See if player is attempting a double jump
             elif self.DoubleJump and self.OnGround == False:
                 self.DoubleJump = False
                 PlayerJumpSound()
                 self.IsJumping = True
-                self.Jump(self.JumpSpeed + 5)            
+                self.Jump(self.JumpSpeed + 5)           # Get player to run the jump routine again but with a reduced value
+
+    # Test if player can dash
+    def TestDashing(self, OnRight):
+        #CurrentTime = trunc(time.time()*10)/10          # Get the current time my multiplying by 10, truncating, then dividing by 10 in order to get a truncated 1 d.p value
+
+        if self.ObtainedDash:  #  and CurrentTime - self.DashStartTime <= self.DashCooldown
+            self.Dashing = True
+            if OnRight: self.Direction.x = self.DashSpeed
+            else: self.Direction.x = -self.DashSpeed
+            return True
+
+        return False    
 
     def GetStatus(self):
         # Override all statuses if the player has died
@@ -139,6 +168,14 @@ class Player(pygame.sprite.Sprite):
                 elif self.OnGround:
                     self.Status = 'Idle'
             
+    def ApplyDash(self):
+        self.DashSlowSpeed = self.Direction.x / 5.5         # Use a recipricol so that the player slows down by a smaller rate over time, instead of a sudden (or linear) stop
+        
+        if (self.Direction.x > 1 and self.FacingRight) or (self.Direction.x < -1 and self.FacingRight == False):
+            self.Direction.x -= self.DashSlowSpeed
+        else:
+            self.Dashing = False
+
     def ApplyGravity(self):
         # Add gravity onto the player
         self.Direction.y += self.Gravity
@@ -159,8 +196,5 @@ class Player(pygame.sprite.Sprite):
         if self.Alive:
             self.GetInput()
             self.GetStatus()
-        self.Animate()
-
-        
-        
-        
+            if self.Dashing: self.ApplyDash()
+        self.Animate() 

@@ -138,7 +138,7 @@ class CollectableItem(AnimatedObject):
 
     def Animate(self):
 
-        # Object floats up and down, so shift y pos up to a certain point, then back down
+        # Object     floats up and down, so shift y pos up to a certain point, then back down
         self.rect = self.image.get_rect(center = self.rect.center)                # Give the rectangle for the surface the same dimensions as the image
         
         YPos = self.rect.y

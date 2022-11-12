@@ -56,6 +56,8 @@ while True:
                     CurrentLevel.MenuDisplayed = False
             elif event.key == pygame.K_SPACE:
                 CurrentLevel.SpacePressed = True
+            elif event.key == pygame.K_LSHIFT:
+                CurrentLevel.ShiftPressed = True
 
     screen.fill((11, 11, 11))    # Remove the previous frame we drew on the screen by filling it with black (so they do not overlap)
 
