@@ -24,11 +24,10 @@ class Level:
         self.PlayerLives = PlayerLivesAndAbilities[0]
         self.HealthBarImg = pygame.image.load('MenuItems/Health Bar/' + str(self.PlayerLives) + '.png').convert_alpha()
 
-        # Player Abilities
+        # Player Abilities          
         self.SpacePressed = False           # Used to get the keydown for space, when user presses double jump
+        self.ShiftPressed = False           # Used to get the keydown for shift, when user wants to dash
         self.PlayerLivesAndAbilities = PlayerLivesAndAbilities          # An array in the form [ No. of lives (between 1 and 5), double jump collected?, dash collected? ]
-        #self.PlayerDoubleJump = PlayerLivesAndAbilities[1]
-        #self.PlayerDash = PlayerLivesAndAbilities[2]
         
         # Setup Level
         self.setup_level(level_data)
@@ -131,12 +130,10 @@ class Level:
                     self.tiles.add(tile)
                     self.AnimatedObjects.add(tile)
                 elif CurrentValue == doublejump:
-                    print("Make double jump")
                     tile = DoubleJump((x,y), (64,58), TileSize, 'DoubleJump', 30)
                     self.tiles.add(tile)
                     self.AnimatedObjects.add(tile)
                 elif CurrentValue == dash:
-                    print("Make dash")
                     tile = Dash((x,y), (46,38), TileSize, 'Dash', 30)
                     self.tiles.add(tile)
                     self.AnimatedObjects.add(tile)
@@ -168,27 +165,47 @@ class Level:
         # getting variables
         player_x = player.rect.centerx      # If you get a 'nonetype' error here, it will mean the csv doesnt have a player spawn point
         Direction_x = player.Direction.x
+        new_player_x = player_x + Direction_x
 
         # Player borders
         MinPlayerX = 450
         MaxPlayerX = ScreenWidth - MinPlayerX
 
-        # Checking if the player is within the border, if not then move the world as such
-        if player_x < MinPlayerX and Direction_x < 0:
-            self.WorldShiftX = player.NormalSpeed
-            player.PlayerSpeed = 0
+        if (player_x >= MaxPlayerX + 20): print("Out of bounds")
 
-        elif player_x > MaxPlayerX and Direction_x > 0:
-            self.WorldShiftX = -(player.NormalSpeed)
-            player.PlayerSpeed = 0
+        # Checking if the player is within the border, if not then move the world as such
+        if player.Dashing:
+            
+            if (new_player_x < MinPlayerX) or (new_player_x > MaxPlayerX):
+                self.WorldShiftX = -round(Direction_x) * 7
+                print(self.WorldShiftX)
+                player.PlayerSpeed = 0
 
         else:
-            self.WorldShiftX = 0
-            player.PlayerSpeed = player.NormalSpeed
+            if new_player_x < MinPlayerX and Direction_x < 0:
+                self.WorldShiftX = player.NormalSpeed
+                player.PlayerSpeed = 0
+
+            elif new_player_x > MaxPlayerX and Direction_x > 0:
+                self.WorldShiftX = -(player.NormalSpeed)
+                player.PlayerSpeed = 0
+
+            else:
+                self.WorldShiftX = 0
+                player.PlayerSpeed = player.NormalSpeed
+
+        # Move the level if they are still not within bounds
+        if Direction_x == 0:
+            if player_x < MinPlayerX - 20:
+                self.WorldShiftX += 2
+                player.rect.x += 2
+            elif player_x > MaxPlayerX + 20:
+                self.WorldShiftX -= 2
+                player.rect.x -= 2
 
     def X_CollisionCheck(self, player):
         # Apply player's horizontal movement
-        player.rect.x += player.Direction.x * player.PlayerSpeed
+        player.rect.centerx += player.Direction.x * player.PlayerSpeed
 
         # Apply enemies horizontal movement
         for Enemy in self.enemies:
@@ -343,10 +360,10 @@ class Level:
             player.IsFalling = False
 
     def ChangePlayerLives(self, Amount):
-        if self.PlayerLives > 0 and Amount == -1:
+        if self.PlayerLives > 0 and Amount < 0:
             self.PlayerLives -= 1
             PlayerDamagedSound()
-        elif self.PlayerLives < 5 and Amount == 1:
+        elif self.PlayerLives < 5 and Amount > 0:
             self.PlayerLives += 1
         self.PlayerLivesAndAbilities[0] += Amount
         self.HealthBarImg = pygame.image.load('MenuItems/Health Bar/' + str(self.PlayerLives) + '.png').convert_alpha()
@@ -423,9 +440,9 @@ class Level:
                 self.FinishedLevel = True
 
 
-        # --- Animation ---
+        # --- Updating Level Objects ---
 
-        # - Objects -
+        # - General Animated Objects -
         self.AnimatedObjects.draw(self.display_surface)   
 
         # - Enemies -
@@ -449,7 +466,11 @@ class Level:
             if self.SpacePressed: 
                 player.SpacePressed = True
                 self.SpacePressed = False
+            if self.ShiftPressed:
+                player.ShiftPressed = True
+                self.ShiftPressed = False
 
+            # Update player and check for level reset
             self.player.update()
             self.CheckResetLevel(player)
 
@@ -460,17 +481,19 @@ class Level:
             self.X_CollisionCheck(player)           # Check collisions for the x and y directions of the player. This must be done separately so that we know wether 
             self.Y_CollisionCheck(player)           # the player needs to be 'pushed' in the x or y direction of a block
 
+            # Draw player
             if player.FacingRight:
                 self.display_surface.blit(player.image, (player.rect.x - 24, player.rect.y))
             else:
                 self.display_surface.blit(player.image, (player.rect.x - 50, player.rect.y))
             
-            player.rect.width = PlayerWidth         # Restore player's rect for the image processing
-            self.portal.rect.y -= 156               # Restore portal's rect
+            player.rect.width = PlayerWidth      # Restore player's rect for the image processing
+            self.portal.rect.y -= 156            # Restore portal's rect
         else:
-            # Stop shifting world
-            self.WorldShiftX = 0
+            self.WorldShiftX = 0                 # Stop shifting world
 
+
+        # --- Other ---
 
         # Display menu 
         if self.MenuDisplayed:
@@ -478,13 +501,11 @@ class Level:
             self.InGameMenu.Buttons.draw(self.display_surface)
             self.ToDisableTimer = self.InGameMenu.DisableTimer
 
-
         # Updating timer
         self.UpdateTimer(self.ToDisableTimer)
             
-
         # Display health bar
-        self.display_surface.blit(self.HealthBarImg, (50, 0))   #(ScreenWidth - 500, ScreenHeight - 120)
+        self.display_surface.blit(self.HealthBarImg, (50, 0))
 
         # Display golden gear if collected
         if self.CollectedGoldenGear:
