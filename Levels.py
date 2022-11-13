@@ -19,6 +19,7 @@ class Level:
         self.display_surface = surface
         self.CurrentLevelNum = CurrentLevelNum
         self.ProgrammerMode = ProgrammerMode
+        self.Scrolling = False
 
         # Health Bar
         self.PlayerLives = PlayerLivesAndAbilities[0]
@@ -173,7 +174,6 @@ class Level:
 
         # Checking if the player is within the border, if not then move the world as such
         if player.Dashing:
-            
             if (new_player_x < MinPlayerX) or (new_player_x > MaxPlayerX):
                 self.WorldShiftX = -round(Direction_x) * 7
                 player.PlayerSpeed = 0
@@ -201,7 +201,7 @@ class Level:
                 player.rect.x -= 2
 
     def X_CollisionCheck(self, player):
-        # Apply player's horizontal movement
+        # Apply player's horizontal movement if the world is not scrolling
         player.rect.centerx += player.Direction.x * player.PlayerSpeed
 
         # Apply enemies horizontal movement
@@ -215,17 +215,34 @@ class Level:
 
         # Now check for collision
         for sprite in self.tiles.sprites():
+            # Player x collision
             if sprite.type == 'Normal' and sprite.rect.colliderect(player.rect):            # Do not check for x collisions with platforms or spikes, just normal blocks
                 if player.Direction.x < 0:
-                    player.rect.left = sprite.rect.right
+                    player.rect.left = sprite.rect.right + 5
                     player.OnLeft = True
                     self.CurrentX = player.rect.left
                 elif player.Direction.x > 0:
-                    player.rect.right = sprite.rect.left
+                    player.rect.right = sprite.rect.left - 5
                     player.OnRight = True
                     self.CurrentX = player.rect.right
+                else:
+                    if player.FacingRight:
+                        player.rect.right = sprite.rect.left - 5
+                        self.CurrentX = player.rect.right
+                    else:
+                        player.rect.left = sprite.rect.right + 5
+                        self.CurrentX = player.rect.left
+
+                # if player.Direction.x < 0 or player.FacingRight:
+                #     player.rect.left = sprite.rect.right
+                #     player.OnLeft = True
+                #     self.CurrentX = player.rect.left
+                # elif player.Direction.x > 0 or player.FacingRight:
+                #     player.rect.right = sprite.rect.left
+                #     player.OnRight = True
+                #     self.CurrentX = player.rect.right
+            # Enemy x collision
             if sprite.type == 'Normal' or sprite.type == 'EnemyWall':
-                # Enemy x collision
                 for Enemy in self.enemies:
                     if sprite.rect.colliderect(Enemy.rect):
                         if Enemy.FacingRight:
@@ -247,7 +264,6 @@ class Level:
         # Kill player if too far down in level
         if player.rect.y > 1000:
             player.PlayerDeath()
-
 
         # Apply enemies horizontal movement
         for Enemy in self.enemies:
@@ -311,7 +327,7 @@ class Level:
                 # PLAYER Y COLLISION CHECKS:
 
                 # If it is none of the above, and it is not a platform then keep them on top of the tile
-                elif player.Direction.y > 0 and (sprite.type == 'Normal' or sprite.type == 'Damaging' or player.OnPlatform):
+                elif player.Direction.y > 0 and (sprite.type == 'Normal' or sprite.type == 'Damaging'):
                     player.rect.bottom = sprite.rect.top
                     player.Direction.y = 0
                     player.IsJumping = False
@@ -474,7 +490,7 @@ class Level:
             PlayerWidth = player.rect.width         # Storing the temporary value of the width so the player can be checked for collisions with the correct rect, 
             player.rect.width = 25                  # then it can be put back for when the next animation slide is placed on the rect
             self.portal.rect.y += 156               # Similar with portal, except shift it up and down  
-            
+
             self.X_CollisionCheck(player)           # Check collisions for the x and y directions of the player. This must be done separately so that we know wether 
             self.Y_CollisionCheck(player)           # the player needs to be 'pushed' in the x or y direction of a block
 

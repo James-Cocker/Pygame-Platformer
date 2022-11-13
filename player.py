@@ -168,6 +168,10 @@ class Player(pygame.sprite.Sprite):
                     self.Status = 'Run'
                 elif self.OnGround:
                     self.Status = 'Idle'
+
+            if self.Dashing: 
+                self.Status = 'Dash'
+                self.ApplyDash()
             
     def ApplyDash(self):
         self.DashSlowSpeed = round(self.Direction.x / 14, 3)         # Use a recipricol so that the player slows down by a smaller rate over time, instead of a sudden (or linear) stop. Round to 3d.p.
@@ -197,7 +201,8 @@ class Player(pygame.sprite.Sprite):
         if self.Alive:
             self.GetInput()
             self.GetStatus()
-            if self.Dashing: 
-                self.Status = 'Dash'
-                self.ApplyDash()
+            # if self.Dashing: 
+            #     self.Status = 'Dash'
+            #     self.ApplyDash()
         self.Animate() 
+        
