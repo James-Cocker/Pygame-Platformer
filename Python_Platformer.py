@@ -13,7 +13,7 @@ screen = pygame.display.set_mode((ScreenWidth, ScreenHeight))
 Clock = pygame.time.Clock()
 
 # Set current level to intro (0th level)
-CurrentLevelNum = 0
+CurrentLevelNum = 1
 NumberOfLastLevel = 1
 GameWon = False
 
@@ -38,7 +38,8 @@ InGameMenu = CreateInGameMenu((300,100), screen)
 
 # Giving the main file acess to the class Level
 ProgrammerMode = False          # Set to true if you would like to see world as the basic rectangles the computer sees
-CurrentLevel = Level(ImportCSV('Levels/Level 0/Level 0.csv'), screen, CurrentLevelNum, ProgrammerMode, InGameMenu, False, PlayerLivesAndAbilities)
+CSVPath = 'Levels/Level ' + str(CurrentLevelNum) + '/Level ' + str(CurrentLevelNum) + '.csv'
+CurrentLevel = Level(ImportCSV(CSVPath), screen, CurrentLevelNum, ProgrammerMode, InGameMenu, False, PlayerLivesAndAbilities)
 
 # In-game infinite loop
 while True:
