@@ -1,4 +1,4 @@
-import pygame, sys
+import pygame, sys, time
 from Levels import *
 from Support import ImportCSV
 from pygame import mixer
@@ -37,7 +37,7 @@ def MoveToNextLevel(CurrentLevelNum, PlayerLivesAndAbilities):
 InGameMenu = CreateInGameMenu((300,100), screen)
 
 # Giving the main file acess to the class Level
-ProgrammerMode = True          # Set to true if you would like to see world as the basic rectangles the computer sees
+ProgrammerMode = False          # Set to true if you would like to see world as the basic rectangles the computer sees
 CSVPath = 'Levels/Level ' + str(CurrentLevelNum) + '/Level ' + str(CurrentLevelNum) + '.csv'
 CurrentLevel = Level(ImportCSV(CSVPath), screen, CurrentLevelNum, ProgrammerMode, InGameMenu, False, PlayerLivesAndAbilities)
 
