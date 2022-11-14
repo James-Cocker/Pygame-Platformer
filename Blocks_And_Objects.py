@@ -66,7 +66,6 @@ class Enemy(AnimatedObject):
         super().__init__(SpawnPoint, Size, TileSize, AnimSpeed, type, Animations, AnimationsPath)
         # Enemy's Attributes
         self.Speed = Speed
-        self.Gravity = 10
         self.FacingRight = True
 
     def Death(self):

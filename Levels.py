@@ -256,10 +256,6 @@ class Level:
         if player.rect.y > 1000:
             player.PlayerDeath()
 
-        # Apply enemies horizontal movement
-        for Enemy in self.enemies:
-            Enemy.rect.y += Enemy.Gravity
-
         # Now check for collision
         for sprite in self.tiles.sprites():
             if sprite.rect.colliderect(player.rect):
@@ -336,15 +332,6 @@ class Level:
                     player.IsJumping = False
                     player.OnGround = True
                     player.OnPlatform = True
-
-            # ENEMY Y COLLISION CHECKS
-            for Enemy in self.enemies:
-                if sprite.rect.colliderect(Enemy.rect):
-                    if sprite.type == 'Damaging':
-                        Enemy.Death()
-                    elif sprite.type == 'Normal':
-                        Enemy.rect.bottom = sprite.rect.top
-
         
         # Setting player's ground, platform and ceiling attributes
         if player.OnGround and player.Direction.y < 0 or player.Direction.y > 1:
