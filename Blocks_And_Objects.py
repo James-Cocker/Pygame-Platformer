@@ -78,8 +78,6 @@ class Enemy(AnimatedObject):
             self.PreviousStatus = self.Status
             self.FrameIndex = 0
 
-        
-
         Animation = self.Animations[self.Status]
         self.Animation = Animation 
 

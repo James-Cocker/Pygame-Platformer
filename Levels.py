@@ -232,15 +232,6 @@ class Level:
                     else:
                         player.rect.left = sprite.rect.right + 5
                         self.CurrentX = player.rect.left
-
-                # if player.Direction.x < 0 or player.FacingRight:
-                #     player.rect.left = sprite.rect.right
-                #     player.OnLeft = True
-                #     self.CurrentX = player.rect.left
-                # elif player.Direction.x > 0 or player.FacingRight:
-                #     player.rect.right = sprite.rect.left
-                #     player.OnRight = True
-                #     self.CurrentX = player.rect.right
             # Enemy x collision
             if sprite.type == 'Normal' or sprite.type == 'EnemyWall':
                 for Enemy in self.enemies:
