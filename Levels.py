@@ -43,6 +43,7 @@ class Level:
         self.InGameMenu = InGameMenu
         self.MenuDisplayed = False
         self.CollectedGoldenGear = False
+        self.SavedGoldenGear = False            # If saved is true, it means the user has collected the golden gear and hit a check point
         self.GoldenGearImg = pygame.image.load('MenuItems/Golden Gear.png').convert_alpha()
 
         # Timer
@@ -77,8 +78,9 @@ class Level:
         self.springs = pygame.sprite.Group()
         self.player = pygame.sprite.GroupSingle()
         self.RespawnPoints = pygame.sprite.Group()
-        self.AnimatedObjects = pygame.sprite.Group()
+        self.AnimatedObjects = pygame.sprite.Group()  
         self.background = pygame.sprite.GroupSingle()
+        self.GoldenGearObj = pygame.sprite.GroupSingle()
 
         Path = 'Levels/Level ' + str(self.CurrentLevelNum) + '/Level ' + str(self.CurrentLevelNum)
         self.background.add(Background(Path))
@@ -129,7 +131,7 @@ class Level:
                     tile = GoldenGear((x,y), (48,48), TileSize, 'GoldenGear', 30)
                     self.GoldenGear = tile
                     self.tiles.add(tile)
-                    self.AnimatedObjects.add(tile)
+                    self.GoldenGearObj.add(tile)
                 elif CurrentValue == doublejump:
                     tile = DoubleJump((x,y), (64,58), TileSize, 'DoubleJump', 30)
                     self.tiles.add(tile)
@@ -287,6 +289,8 @@ class Level:
                 elif sprite.type == 'Respawn':
                     if self.RespawnReached == sprite.ID - 1:            # If they have reached the next respawn point
                         player.RespawnPoint = (player.rect.x, player.rect.y)
+                        if self.CollectedGoldenGear:
+                            self.SavedGoldenGear = True
                         self.RespawnReached += 1
                         self.DistanceMovedX = 0              
                         self.DistanceMovedY = 0     
@@ -294,9 +298,9 @@ class Level:
                         sprite.FrameIndex = 0
 
                 elif sprite.type == 'GoldenGear':
-                    PlayGoldenGearCollection()
-                    self.CollectedGoldenGear = True
-                    sprite.kill()
+                    if self.CollectedGoldenGear == False:
+                        PlayGoldenGearCollection()
+                        self.CollectedGoldenGear = True
 
                 elif sprite.type == 'DoubleJump':
                     PlayGoldenGearCollection()
@@ -340,12 +344,12 @@ class Level:
         if player.OnCeiling and player.Direction.y > 0:
             player.OnCeiling = False
 
-        # 'Direction' will be 0 (or 0.9) when the player is standing still
-        # When the player jumps, their direction will be max negative (-17) and arc to 0 as they reach the peak of their jump
-        # On their decent (falling), their direction will accelerate (due to gravity) in the positive direction
-        # The reason 7 has been chosen is so that the player may have some leaniency when falling off a block and attempting to jump (so that they may fall a little whithout it counting as falling)
+        # 'Direction' will be 0 (or 0.9) when the player is standing still.
+        # When the player jumps, their direction will be max negative (-17) and arc to 0 as they reach the peak of their jump.
+        # On their decent, their direction will accelerate (due to gravity) in the positive direction.
+        # The reason 9 has been chosen is so that the player may have some leaniency when falling off a block and attempting to jump (so that they may fall a little whithout it counting as falling)
         # This, in my opinion, helps with playability and smoothness of the game
-        if player.Direction.y >= 7:
+        if player.Direction.y >= 9:
             player.IsFalling = True
         else:
             player.IsFalling = False
@@ -353,6 +357,8 @@ class Level:
     def ChangePlayerLives(self, Amount):
         if self.PlayerLives > 0 and Amount < 0:
             self.PlayerLives -= 1
+            if self.SavedGoldenGear == False:
+                self.CollectedGoldenGear = False
             PlayerDamagedSound()
         elif self.PlayerLives < 5 and Amount > 0:
             self.PlayerLives += 1
@@ -501,3 +507,5 @@ class Level:
         # Display golden gear if collected
         if self.CollectedGoldenGear:
             self.display_surface.blit(self.GoldenGearImg, (ScreenWidth - 100, ScreenHeight - 100))
+        else:
+            self.GoldenGearObj.draw(self.display_surface)

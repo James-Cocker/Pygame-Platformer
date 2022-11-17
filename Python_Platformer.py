@@ -13,7 +13,7 @@ screen = pygame.display.set_mode((ScreenWidth, ScreenHeight))
 Clock = pygame.time.Clock()
 
 # Set current level to intro (0th level)
-CurrentLevelNum = 2
+CurrentLevelNum = 0
 NumberOfLastLevel = 2
 GameWon = False
 
