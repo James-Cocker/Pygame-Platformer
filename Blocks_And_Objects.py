@@ -1,4 +1,4 @@
-import pygame
+import pygame, random
 from Support import ImportFolder
 
 # The parent class for each class in this file
@@ -66,7 +66,9 @@ class Enemy(AnimatedObject):
         super().__init__(SpawnPoint, Size, TileSize, AnimSpeed, type, Animations, AnimationsPath)
         # Enemy's Attributes
         self.Speed = Speed
-        self.FacingRight = True
+        rand = random.randint(1,2)          # Adds a bit of randomness to a line of enemies
+        if rand == 1: self.FacingRight = True
+        else: self.FacingRight = False
 
     def Death(self):
         self.kill()
@@ -97,7 +99,7 @@ class Enemy(AnimatedObject):
 # First type of enemy
 class BlindingSpider(Enemy):
     def __init__(self, SpawnPoint, TileSize):
-        Speed = 3
+        Speed = random.randint(2,3)
         Size = (80, 32)
         AnimationsPath = 'SpriteSheets/Enemies/Blinding Spider/'
         super().__init__(AnimationsPath, Speed, SpawnPoint, Size, TileSize)

@@ -13,14 +13,14 @@ screen = pygame.display.set_mode((ScreenWidth, ScreenHeight))
 Clock = pygame.time.Clock()
 
 # Set current level to intro (0th level)
-CurrentLevelNum = 0
-NumberOfLastLevel = 2
+CurrentLevelNum = 3
+NumberOfLastLevel = 3
 GameWon = False
 
 # Player background game music
-mixer.music.load('MenuItems/BackgroundMusic.mp3')
-mixer.music.set_volume(0.2)
-mixer.music.play()  
+#mixer.music.load('MenuItems/BackgroundMusic.mp3')
+#mixer.music.set_volume(0.2)
+#mixer.music.play()  
 
 # Set player lives and abilities - This is not done in 'player' or 'Levels' as the player should retain their number of lives through the entire playthrough (they are never reset back to 5)
 # This is in the format [ No. of lives (between 1 and 5), double jump collected?, dash collected? ]

@@ -7,7 +7,7 @@ from background import Background
 
 # Set constants
 ScreenWidth = 1280
-ScreenHeight = 720
+ScreenHeight = 640
 TileSize = 64
 
 # Creating the call that will be used for each level
@@ -255,7 +255,7 @@ class Level:
         player.ApplyGravity()
 
         # Kill player if too far down in level
-        if player.rect.y > 1000:
+        if player.rect.y > ScreenHeight + 20:
             player.PlayerDeath()
 
         # Now check for collision
@@ -330,7 +330,7 @@ class Level:
                     player.OnCeiling = True
 
                 # If the block is a platform then ensure player is physically above it before applying y collision checks
-                if sprite.type == 'Platform' and player.rect.bottom <= sprite.rect.bottom and player.Direction.y > 0:
+                if sprite.type == 'Platform' and (player.rect.bottom <= (sprite.rect.top + 10) or player.Direction.y > 10 and player.rect.bottom <= (sprite.rect.bottom - 20)) and player.Direction.y > 0:
                     player.rect.bottom = sprite.rect.top
                     player.Direction.y = 0
                     player.IsJumping = False
@@ -347,9 +347,9 @@ class Level:
         # 'Direction' will be 0 (or 0.9) when the player is standing still.
         # When the player jumps, their direction will be max negative (-17) and arc to 0 as they reach the peak of their jump.
         # On their decent, their direction will accelerate (due to gravity) in the positive direction.
-        # The reason 9 has been chosen is so that the player may have some leaniency when falling off a block and attempting to jump (so that they may fall a little whithout it counting as falling)
+        # The reason 10 has been chosen is so that the player may have some leaniency when falling off a block and attempting to jump (so that they may fall a little whithout it counting as falling)
         # This, in my opinion, helps with playability and smoothness of the game
-        if player.Direction.y >= 9:
+        if player.Direction.y >= 10:
             player.IsFalling = True
         else:
             player.IsFalling = False
@@ -401,7 +401,7 @@ class Level:
                         RespawnPointNum.Status = 'Idle'
                         player.Direction.y = 0
                         player.FrameIndex = 0
-                        player.rect = player.image.get_rect(topleft = player.RespawnPoint)
+                        player.rect = player.image.get_rect(topleft = (player.RespawnPoint[0], player.RespawnPoint[1] - TileSize))
                         player.Alive = True
                
     def UpdateTimer(self, DisableTimer):
@@ -504,7 +504,7 @@ class Level:
         # Display health bar
         self.display_surface.blit(self.HealthBarImg, (50, 0))
 
-        # Display golden gear if collected
+        # Display golden gear in bottom right if collected, otherwise display it on the screen
         if self.CollectedGoldenGear:
             self.display_surface.blit(self.GoldenGearImg, (ScreenWidth - 100, ScreenHeight - 100))
         else:
