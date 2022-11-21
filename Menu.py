@@ -43,6 +43,7 @@ class Menu():
         self.rect = self.image.get_rect()
         self.DisplaySurface = Screen
         self.DisplayingMenu = False
+        self.Return = False         # Indicates if player has pressed 'Return' in the in-game menu
 
         # Buttons
         self.Buttons = pygame.sprite.Group()
@@ -87,6 +88,9 @@ class Menu():
                     else:
                         self.DisableTimer = False
 
+                elif button.Name == 'Return' and button.Clicked:
+                    self.Return = True
+
             # Reset mouse down
             self.MouseDown = False
 
@@ -110,7 +114,7 @@ class Button(pygame.sprite.Sprite):
         MousePos = pygame.mouse.get_pos()
 
         # Check if the mouse is colliding with the button. No need to check whether the mouse is being clicked as the update function is only run when this happens
-        if self.rect.collidepoint(MousePos) and self.Clicked == False:
+        if self.rect.collidepoint(MousePos):
             # Play click sound for anything other the vol up and down buttons (as the user will typically press these multiple times within a short interval)
             if self.Name != 'ArrowDown' and self.Name != 'ArrowUp':
                 PlayClickSound()
@@ -160,9 +164,9 @@ class Button(pygame.sprite.Sprite):
                     self.image = pygame.image.load("MenuItems/Buttons/Timer.png").convert_alpha()
                     self.On = True
 
-            elif self.Name == 'Return':
-                # Return to title screen
-                print()
+            # elif self.Name == 'Return':
+            #     # Return to title screen
+            #     print()
 
             elif self.Name == 'Exit':
                 # Close program
