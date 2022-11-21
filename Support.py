@@ -1,6 +1,7 @@
 from csv import reader
 from os import walk
 import pygame, sys
+from Sounds import *
 
 def ImportFolder(Path):
     SurfaceList = []
@@ -35,6 +36,7 @@ def DisplayNameScreen(screen):
             elif event.type==pygame.KEYDOWN:
                 if event.key==pygame.K_RETURN:
                     PressedEnter = True
+                    PlayClickSound()
                     return NameText
                 elif event.key==pygame.K_BACKSPACE:
                     NameText = NameText[:-1]
@@ -49,3 +51,6 @@ def DisplayNameScreen(screen):
 
         pygame.display.update()
         Clock.tick(60)
+
+def SaveScores():
+    print()

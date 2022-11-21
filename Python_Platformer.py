@@ -40,6 +40,9 @@ def MoveToNextLevel(CurrentLevelNum, PlayerLivesAndAbilities):
     CSVPath = 'Levels/Level ' + str(CurrentLevelNum) + '/Level ' + str(CurrentLevelNum) + '.csv'
     return Level(ImportCSV(CSVPath), screen, CurrentLevelNum, ProgrammerMode, InGameMenu, TempToDisableTimer, PlayerLivesAndAbilities), CurrentLevelNum
 
+# Name Screen
+Name = DisplayNameScreen(screen)
+
 # Title Screen
 while StartedGame == False:
     for event in pygame.event.get():
@@ -57,7 +60,6 @@ while StartedGame == False:
             break
         elif button.Name == 'Load Game' and button.Clicked:
             StartedGame = True
-            text = DisplayNameScreen(screen)
             break
 
     pygame.display.update()
