@@ -13,14 +13,14 @@ screen = pygame.display.set_mode((ScreenWidth, ScreenHeight))
 Clock = pygame.time.Clock()
 
 # Set current level to intro (0th level)
-CurrentLevelNum = 3
+CurrentLevelNum = -1
 NumberOfLastLevel = 3
 GameWon = False
 
 # Player background game music
-#mixer.music.load('MenuItems/BackgroundMusic.mp3')
-#mixer.music.set_volume(0.2)
-#mixer.music.play()  
+# mixer.music.load('MenuItems/BackgroundMusic.mp3')
+# mixer.music.set_volume(0.2)
+# mixer.music.play()  
 
 # Set player lives and abilities - This is not done in 'player' or 'Levels' as the player should retain their number of lives through the entire playthrough (they are never reset back to 5)
 # This is in the format [ No. of lives (between 1 and 5), double jump collected?, dash collected? ]
@@ -33,8 +33,52 @@ def MoveToNextLevel(CurrentLevelNum, PlayerLivesAndAbilities):
     CSVPath = 'Levels/Level ' + str(CurrentLevelNum) + '/Level ' + str(CurrentLevelNum) + '.csv'
     return Level(ImportCSV(CSVPath), screen, CurrentLevelNum, ProgrammerMode, InGameMenu, TempToDisableTimer, PlayerLivesAndAbilities), CurrentLevelNum
 
-# Create Menu (only needs to be created once each time the program is loaded - a new menu is not needed for each level)
+# Create Menus (only needs to be created once each time the program is loaded)
+TitleScreen = CreateTitleScreen(screen)
+LevelSelectionScreen = CreateLevelSelectionScreen(screen)
 InGameMenu = CreateInGameMenu((300,100), screen)
+
+StartGame = False
+while StartGame == False:
+    for event in pygame.event.get():
+        if event.type==pygame.QUIT: sys.exit()
+        elif event.type==pygame.MOUSEBUTTONDOWN:
+            TitleScreen.MouseDown = True
+
+    screen.fill((11, 11, 11))    # Remove the previous frame we drew on the screen by filling it with black (so they do not overlap)
+    TitleScreen.update()
+
+    for button in TitleScreen.Buttons:
+        if button.Name == 'Start' and button.Clicked:
+            CurrentLevelNum = 0
+            StartGame = True
+            break
+        elif button.Name == 'Load Game' and button.Clicked:
+            StartGame = True
+            break
+
+    pygame.display.update()
+    Clock.tick(60)
+
+
+# Level selection screen
+while CurrentLevelNum == -1:
+    for event in pygame.event.get():
+        if event.type==pygame.QUIT: sys.exit()
+        elif event.type==pygame.MOUSEBUTTONDOWN:
+            LevelSelectionScreen.MouseDown = True
+
+    screen.fill((11, 11, 11))   # Same as above
+    LevelSelectionScreen.update()
+
+    for button in LevelSelectionScreen.Buttons:
+        for Num in range(len(LevelSelectionScreen.Buttons)):
+            if button.Name == ('Level ' + str(Num)) and button.Clicked:
+                CurrentLevelNum = Num
+                break
+
+    pygame.display.update()
+    Clock.tick(60)
 
 # Giving the main file acess to the class Level
 ProgrammerMode = False          # Set to true if you would like to see world as the basic rectangles the computer sees
@@ -46,6 +90,8 @@ while True:
     # check if we pressed quit
     for event in pygame.event.get():
         if event.type==pygame.QUIT: sys.exit()
+        elif event.type==pygame.MOUSEBUTTONDOWN:
+            InGameMenu.MouseDown = True
         # Create an in-game menu if escape is pressed
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
@@ -60,7 +106,7 @@ while True:
             elif event.key == pygame.K_LSHIFT:
                 CurrentLevel.ShiftPressed = True
 
-    screen.fill((11, 11, 11))    # Remove the previous frame we drew on the screen by filling it with black (so they do not overlap)
+    screen.fill((11, 11, 11))
 
     # Running the next level when the player compltes the first one
     if CurrentLevel.FinishedLevel == False:

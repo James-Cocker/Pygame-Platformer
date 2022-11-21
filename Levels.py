@@ -401,7 +401,7 @@ class Level:
                         RespawnPointNum.Status = 'Idle'
                         player.Direction.y = 0
                         player.FrameIndex = 0
-                        player.rect = player.image.get_rect(topleft = (player.RespawnPoint[0], player.RespawnPoint[1] - TileSize))
+                        player.rect = player.image.get_rect(topleft = (player.RespawnPoint[0], player.RespawnPoint[1] - 60))
                         player.Alive = True
                
     def UpdateTimer(self, DisableTimer):
@@ -495,7 +495,6 @@ class Level:
         # Display menu 
         if self.MenuDisplayed:
             self.InGameMenu.update()
-            self.InGameMenu.Buttons.draw(self.display_surface)
             self.ToDisableTimer = self.InGameMenu.DisableTimer
 
         # Updating timer
