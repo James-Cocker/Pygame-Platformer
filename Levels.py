@@ -401,7 +401,7 @@ class Level:
                         RespawnPointNum.Status = 'Idle'
                         player.Direction.y = 0
                         player.FrameIndex = 0
-                        player.rect = player.image.get_rect(topleft = (player.RespawnPoint[0] + 64, player.RespawnPoint[1] - 10))
+                        player.rect = player.image.get_rect(topleft = (player.RespawnPoint[0], player.RespawnPoint[1] - 10))
                         player.Alive = True
                
     def UpdateTimer(self, DisableTimer):

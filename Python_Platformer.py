@@ -1,6 +1,6 @@
-import pygame, sys, time
+import pygame, sys
 from Levels import *
-from Support import ImportCSV
+from Support import *
 from pygame import mixer
 
 # Initialising pygame
@@ -28,6 +28,10 @@ mixer.music.play()
 # This is in the format [ No. of lives (between 1 and 5), double jump collected?, dash collected? ]
 PlayerLivesAndAbilities = [5, False, False]
 
+# Create Menus (only needs to be created once each time the program is loaded)
+TitleScreen = CreateTitleScreen(screen)
+LevelSelectionScreen = CreateLevelSelectionScreen(screen)
+InGameMenu = CreateInGameMenu((300,100), screen)
 
 # Routine to load and return the next level automatically after the prvious has been completed
 def MoveToNextLevel(CurrentLevelNum, PlayerLivesAndAbilities):
@@ -35,12 +39,6 @@ def MoveToNextLevel(CurrentLevelNum, PlayerLivesAndAbilities):
     CurrentLevelNum += 1
     CSVPath = 'Levels/Level ' + str(CurrentLevelNum) + '/Level ' + str(CurrentLevelNum) + '.csv'
     return Level(ImportCSV(CSVPath), screen, CurrentLevelNum, ProgrammerMode, InGameMenu, TempToDisableTimer, PlayerLivesAndAbilities), CurrentLevelNum
-
-# Create Menus (only needs to be created once each time the program is loaded)
-TitleScreen = CreateTitleScreen(screen)
-LevelSelectionScreen = CreateLevelSelectionScreen(screen)
-InGameMenu = CreateInGameMenu((300,100), screen)
-
 
 # Title Screen
 while StartedGame == False:
@@ -59,6 +57,7 @@ while StartedGame == False:
             break
         elif button.Name == 'Load Game' and button.Clicked:
             StartedGame = True
+            text = DisplayNameScreen(screen)
             break
 
     pygame.display.update()
@@ -84,8 +83,6 @@ while True:
 
         pygame.display.update()
         Clock.tick(60)
-
-        print(CurrentLevelNum)
 
 
     # Giving the main file acess to the class Level
