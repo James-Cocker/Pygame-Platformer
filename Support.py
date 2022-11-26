@@ -81,25 +81,29 @@ def LoadLevelsReached(Name):
     for PlayerInfo in Lines:
         if PlayerInfo[0] == Name:
             PlayerID = ListNum
-            return PlayerInfo[1], PlayerID
+            return PlayerInfo[1], PlayerInfo, PlayerID
         ListNum += 1
+
     # Otherwise set the player's ID to the next line in the csv file
     PlayerID = ListNum
 
-    # In the format: Name, max level reached, time taken for level 1, golden gear collected? (T/F), time taken for level 2, golden gear collected? (T/F), ect...
-    Lines.append([Name,0,-1,False,-1,False,-1,False,-1,False,-1,False,-1,False,-1,False,-1,False,-1,False])
+    # In the format: Name, max level reached, time taken for level 0, golden gear collected? (T/F), time taken for level 1, golden gear collected? (T/F), ect...
+    PlayerInfo = [Name,0,-1,False,-1,False,-1,False,-1,False,-1,False,-1,False,-1,False,-1,False,-1,False,-1,False]
+    Lines.append(PlayerInfo)
 
     SaveUpdatedFile(Lines)
 
     # If player has just created new entry in the csv then report their max level as 0 and return their ID in table (row num)
-    return 0, PlayerID
+    return 0, PlayerInfo, PlayerID
 
 def LoadScores():
     print()
 
-def SaveScores(MaxLevelReached, PlayerID):
+def SaveScores(MaxLevelReached, PlayerID, PlayerInfo):
     # Open the file and see if the user's name can be found, in which case save their row number (ID) and return their max level reached
     Lines = ReadFile()
-    Lines[PlayerID][1] = MaxLevelReached
+
+    PlayerInfo[1] = MaxLevelReached
+    Lines[PlayerID] = PlayerInfo
 
     SaveUpdatedFile(Lines)

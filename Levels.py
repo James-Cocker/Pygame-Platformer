@@ -62,7 +62,7 @@ class Level:
         NormalBlock = 142                               # The ID from the abstract .csv file of the tile which repesents a normal block the player is able to stand upon
         DamagingBlocks = [270, 271]                     # Same as above, except for tiles such as spikes
         PlatformBlocks = [58,59,60,61,62,72,73,75,76]   # Platform tiles whereby the player is able to jump on, but will not be used in x-collisions 
-        SpringBlock = 281
+        SpringBlock = 281                               # Ect...
         RespawnBlock = 305
         PortalBlock = 322
         BlindingSpiderEnemy = 290
@@ -410,11 +410,11 @@ class Level:
                
     def UpdateTimer(self, DisableTimer):
         # Update timer by subtracting current time from level start time
-        ElapsedTime = time.time() - self.LevelStartTime
+        self.ElapsedTime = str(round(time.time() - self.LevelStartTime,1))
 
         # If they havent disabled the timer, then display it in the bottom left
         if DisableTimer == False:
-            TimerText = self.TimerFont.render("Time: " + str(round(ElapsedTime,1)), True, (255,255,255))
+            TimerText = self.TimerFont.render("Time: " + self.ElapsedTime, True, (255,255,255))
             self.display_surface.blit(TimerText, (50,ScreenHeight-60))
         
     def run(self):
@@ -491,7 +491,7 @@ class Level:
             player.rect.width = PlayerWidth      # Restore player's rect for the image processing
             self.portal.rect.y -= 156            # Restore portal's rect
         else:
-            self.WorldShiftX = 0                 # Stop shifting world
+            self.WorldShiftX = 0                 # Stop shifting world if warping
 
 
         # --- Other ---
