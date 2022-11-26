@@ -44,8 +44,6 @@ def MoveToNextLevel(CurrentLevelNum, PlayerLivesAndAbilities, MaxLevelReached):
 Name = DisplayNameScreen(screen)
 MaxLevelReached,PlayerInfo,PlayerID = LoadLevelsReached(Name)
 
-DisplayHighScoreScreen(MaxLevelReached, PlayerID, PlayerInfo, screen)
-
 # Create Menus (only needs to be created once each time the program is loaded)
 TitleScreen = CreateTitleScreen(screen)
 LevelSelectionScreen = CreateLevelSelectionScreen(screen)
@@ -85,6 +83,8 @@ while True:
     # Give this its own routine so that when user 'returns' back to level selection screen, their max level reached (and hence the buttons available to them) have updated
     CreateButtonsForLevelSelectionScreen(int(MaxLevelReached), LevelSelectionScreen)
 
+    DisplayStats = False
+    DisplayHighScores = False
     while CurrentLevelNum == -1:
         for event in pygame.event.get():
             if event.type==pygame.QUIT:
@@ -104,8 +104,9 @@ while True:
                         break
                     elif button.Name == 'See Stats':
                         DisplayStatsScreen(MaxLevelReached,PlayerID,PlayerInfo,screen)
-                    elif button.Name == 'See High Score':
+                    elif button.Name == 'See High Scores':
                         DisplayHighScoreScreen(MaxLevelReached,PlayerID,PlayerInfo,screen)
+                    button.Clicked = False
 
         pygame.display.update()
         Clock.tick(60)

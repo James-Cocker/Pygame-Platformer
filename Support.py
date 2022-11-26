@@ -139,10 +139,18 @@ def DisplayHighScoreScreen(MaxLevelReached, PlayerID, PlayerInfoToSave, screen):
     ReturnUponKeyPress(MaxLevelReached, PlayerID, PlayerInfoToSave)
     
 def DisplayStatsScreen(MaxLevelReached, PlayerID, PlayerInfo, screen):
-    Background = pygame.image.load('MenuItems/Menus/Stats Screen').convert_alpha()
+    Background = pygame.image.load('MenuItems/Menus/Stats Screen.png').convert_alpha()
     screen.blit(Background, (0,0))
 
+    IndexesOFTimes = [2,4,6,8,10,12,14,16,18,20]      # Statically set list of indexes as it would be hard to loop through dynamically
+    OutputTextLocations = [(330,220),(330,270),(330,320),(330,370),(330,420),(700,220),(700,270),(700,320),(700,370)]         # Same for text locations
 
+    Font = pygame.font.SysFont("8-Bit-Madness", 45)
+    for LevelNum in range(9):
+        Text = "Level " + str(LevelNum+1) + ": " + PlayerInfo[(IndexesOFTimes[LevelNum])] + "s"
+        OutputText = Font.render(Text, True, (0,0,0))
+        screen.blit(OutputText, OutputTextLocations[LevelNum])
+    pygame.display.update()
 
     ReturnUponKeyPress(MaxLevelReached, PlayerID, PlayerInfo)
 
