@@ -96,8 +96,65 @@ def LoadLevelsReached(Name):
     # If player has just created new entry in the csv then report their max level as 0 and return their ID in table (row num)
     return 0, PlayerInfo, PlayerID
 
-def LoadScores():
-    print()
+def DisplayHighScoreScreen(MaxLevelReached, PlayerID, PlayerInfoToSave, screen):
+    # Creating a 2D array of all level times, in the form [[Player 1s Level 1 time, P1s Level 2 time, ect..], [P2s Level 1 time, ect...], ect...]           --- >          Intro level is not stored or displayed in high scores
+    AllListsOfLevelTimes = []
+    ListOfLevelTimes = []
+    IndexesOFTimes = [2,4,6,8,10,12,14,16,18,20]      # Statically set list of indexes as it would be hard to loop through dynamically
+    OutputTextLocations = [(180,220),(180,270),(180,320),(180,370),(180,420),(700,220),(700,270),(700,320),(700,370)]         # Same for text locations
+    
+    Lines = ReadFile()
+    for PlayerInfo in Lines:
+        for LevelNum in range(9):           # Looping through from 0 to 8 (9 times, once for each level)
+            ListOfLevelTimes.append(PlayerInfo[(IndexesOFTimes[LevelNum])])
+        AllListsOfLevelTimes.append(ListOfLevelTimes)
+        ListOfLevelTimes = []
+
+    # Sort through array of times and put into lists of best times for each level, along with the players name. The lists are in the form [Best time for Level 1, Best time for l2, ect...],[Name of player with best time for Level 1, ect...]
+    SortedLevelTimes = []
+    SortedPlayerNames = []
+    for LevelNum in range(9):
+        BestPlayer = ""
+        LowestTime = 9000.0
+        for PlayerNum in range(len(AllListsOfLevelTimes)):
+            CurrentVal = AllListsOfLevelTimes[PlayerNum][LevelNum]
+            if CurrentVal != "-1" and float(CurrentVal) <= float(LowestTime):
+                LowestTime = CurrentVal
+                BestPlayer = Lines[PlayerNum][0]
+        SortedLevelTimes.append(LowestTime)
+        SortedPlayerNames.append(BestPlayer)
+
+    # Display background and have the text overlay this
+    Background = pygame.image.load('MenuItems/Menus/High Scores Screen.png').convert_alpha()
+    screen.blit(Background, (0,0))
+
+    Font = pygame.font.SysFont("8-Bit-Madness", 45)
+    for LevelNum in range(9):
+        Text = "Level " + str(LevelNum+1) + ": " + SortedLevelTimes[LevelNum] + "s (" + SortedPlayerNames[LevelNum] + ")"
+        OutputText = Font.render(Text, True, (0,0,0))
+        screen.blit(OutputText, OutputTextLocations[LevelNum])
+    pygame.display.update()
+
+    # Then pause the screen until the user presses a key
+    ReturnUponKeyPress(MaxLevelReached, PlayerID, PlayerInfoToSave)
+    
+def DisplayStatsScreen(MaxLevelReached, PlayerID, PlayerInfo, screen):
+    Background = pygame.image.load('MenuItems/Menus/Stats Screen').convert_alpha()
+    screen.blit(Background, (0,0))
+
+
+
+    ReturnUponKeyPress(MaxLevelReached, PlayerID, PlayerInfo)
+
+def ReturnUponKeyPress(MaxLevelReached, PlayerID, PlayerInfo):
+    while True:
+        for event in pygame.event.get():
+            if event.type==pygame.QUIT: 
+                SaveScores(MaxLevelReached, PlayerID, PlayerInfo)
+                sys.exit()
+            elif event.type==pygame.KEYDOWN:
+                PlayClickSound()
+                return
 
 def SaveScores(MaxLevelReached, PlayerID, PlayerInfo):
     # Open the file and see if the user's name can be found, in which case save their row number (ID) and return their max level reached
