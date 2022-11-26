@@ -42,7 +42,7 @@ def MoveToNextLevel(CurrentLevelNum, PlayerLivesAndAbilities, MaxLevelReached):
 # --- Name Screen ---
 
 Name = DisplayNameScreen(screen)
-MaxLevelReached,PlayerID = LoadLevelsReached(Name)
+MaxLevelReached,PlayerInfo,PlayerID = LoadLevelsReached(Name)
 
 # Create Menus (only needs to be created once each time the program is loaded)
 TitleScreen = CreateTitleScreen(screen)
@@ -115,7 +115,7 @@ while True:
         # check if we pressed quit
         for event in pygame.event.get():
             if event.type==pygame.QUIT:
-                SaveScores(MaxLevelReached, PlayerID)
+                SaveScores(MaxLevelReached, PlayerID, PlayerInfo)
                 sys.exit()
             elif event.type==pygame.MOUSEBUTTONDOWN:
                 InGameMenu.MouseDown = True
@@ -139,6 +139,9 @@ while True:
         if CurrentLevel.FinishedLevel == False:
             CurrentLevel.run()               
         elif int(CurrentLevelNum) < NumberOfLastLevel:
+            # Saving current time and whether the golden gear has been collected
+            PlayerInfo[2+(int(CurrentLevelNum)*2)] = str(CurrentLevel.ElapsedTime)
+            PlayerInfo[3+(int(CurrentLevelNum)*2)] = str(CurrentLevel.CollectedGoldenGear)
             CurrentLevel, CurrentLevelNum, MaxLevelReached = MoveToNextLevel(int(CurrentLevelNum), PlayerLivesAndAbilities, int(MaxLevelReached))
         else:
             # Display winning screen and return back to menu
@@ -146,7 +149,7 @@ while True:
 
         # Save and exit if the user has chosen to quit the game from pressing 'exit' in the in-game menu
         if CurrentLevel.SaveAndExit:
-            SaveScores(MaxLevelReached, PlayerID)
+            SaveScores(MaxLevelReached, PlayerID, PlayerInfo)
             sys.exit()
 
         # Update the screen and keep the frame rate at 60
