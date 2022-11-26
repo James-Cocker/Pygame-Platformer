@@ -50,6 +50,9 @@ class Level:
         self.ToDisableTimer = ToDisableTimer
         self.LevelStartTime = time.time()
 
+        # To tell if player has chosen to exit the level
+        self.SaveAndExit = False
+
         # Indicates whether the player has beaten the level (hit the portal)
         self.FinishedLevel = False
 
@@ -288,7 +291,7 @@ class Level:
                 # If they hit a respawn point, check they have not already done so, then set their new spawn point to here
                 elif sprite.type == 'Respawn':
                     if self.RespawnReached == sprite.ID - 1:            # If they have reached the next respawn point
-                        player.RespawnPoint = (player.rect.x, player.rect.y)
+                        player.RespawnPoint = player.rect.topleft#(player.rect.x, player.rect.y)
                         if self.CollectedGoldenGear:
                             self.SavedGoldenGear = True
                         self.RespawnReached += 1
@@ -368,8 +371,9 @@ class Level:
     def CheckResetLevel(self, player):
         # Check for the player to have died, and finished their death animation before resetting level and player
         if player.Status == 'Death' and (int(player.FrameIndex) == len(player.Animation) - 1):
-            
-            player.FrameIndex = len(player.Animation) - 1
+            player.SpacePressed = False         # So that the player does not bounce after being respawned
+
+            player.FrameIndex = len(player.Animation) - 1         # Keep the player at the last frame of death so this loop will continue
 
             # Reset Level
             background = self.background.sprite
@@ -401,7 +405,7 @@ class Level:
                         RespawnPointNum.Status = 'Idle'
                         player.Direction.y = 0
                         player.FrameIndex = 0
-                        player.rect = player.image.get_rect(topleft = (player.RespawnPoint[0], player.RespawnPoint[1] - 10))
+                        player.rect = player.image.get_rect(topleft = (player.RespawnPoint[0] + 30, player.RespawnPoint[1] - 30))
                         player.Alive = True
                
     def UpdateTimer(self, DisableTimer):
@@ -496,6 +500,9 @@ class Level:
         if self.MenuDisplayed:
             self.InGameMenu.update()
             self.ToDisableTimer = self.InGameMenu.DisableTimer
+            for Button in self.InGameMenu.Buttons:
+                if Button.Name == 'Exit' and Button.Clicked:
+                    self.SaveAndExit = True
 
         # Updating timer
         self.UpdateTimer(self.ToDisableTimer)

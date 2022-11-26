@@ -21,6 +21,3 @@ def BlindingSpiderAttackSound():
 
 def PlaySpringSound():
     pygame.mixer.Channel(6).play(pygame.mixer.Sound('Sounds/Spring.wav'))
-
-# def PlayGoldenGearCollection():
-#     pygame.mixer.Channel(7).play(pygame.mixer.Sound('Sounds/Golden Gear.wav'))

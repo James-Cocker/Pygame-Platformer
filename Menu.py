@@ -1,6 +1,7 @@
 import pygame, sys
 from pygame import mixer
 from Sounds import *
+from Support import *
 
 global Volume
 global RecordedVolume
@@ -9,7 +10,7 @@ RecordedVolume = Volume
 
 
 def CreateInGameMenu(MenuOffset, Screen):
-    menu = Menu('MenuItems/Menus/Menu.png', Screen)
+    menu = Menu('MenuItems/Menus/Menu.png', Screen, "In-Game Menu")
 
     ButtonsToMake = [['ArrowDown',201,182],['ArrowUp',434,182],['Volume',252,189],['Timer',252,240],['Return',259,290],['Exit',281,341]]
     menu.CreateButtons(ButtonsToMake, MenuOffset)
@@ -18,7 +19,7 @@ def CreateInGameMenu(MenuOffset, Screen):
 
 
 def CreateTitleScreen(Screen):
-    menu = Menu('MenuItems/Menus/Title Screen.png', Screen)
+    menu = Menu('MenuItems/Menus/Title Screen.png', Screen, "Title Screen")
 
     ButtonsToMake = [['Start',544,300], ['Load Game',524,371]]
     menu.CreateButtons(ButtonsToMake, (0,0))
@@ -27,30 +28,46 @@ def CreateTitleScreen(Screen):
 
 
 def CreateLevelSelectionScreen(Screen):
-    menu = Menu('MenuItems/Menus/Level Selection Screen.png', Screen)
-
-    ButtonsToMake = [['Level 0',550,197],['Level 1',244,277],['Level 2',550,277],['Level 3',856,277],['Level 4',244,357],['Level 5',550,357],['Level 6',856,357],['Level 7',244,436],['Level 8',550,436],['Level 9',856,436]]
-    menu.CreateButtons(ButtonsToMake, (0,0))
+    menu = Menu('MenuItems/Menus/Level Selection Screen.png', Screen, "Level Selection Screen")
 
     return menu
 
 
+def CreateButtonsForLevelSelectionScreen(MaxLevelReached, LevelSelectionScreen):
+    for button in LevelSelectionScreen.Buttons:
+        button.kill()
+
+    ButtonsToMake = [['Level 0',550,197],['Level 1',244,277],['Level 2',550,277],['Level 3',856,277],['Level 4',244,357],['Level 5',550,357],['Level 6',856,357],['Level 7',244,436],['Level 8',550,436],['Level 9',856,436]]
+
+    # Loop through each button and set it to the 'off' image if the user is unable to press it 
+    Counter = 0
+    for Button in ButtonsToMake:
+        if Counter > MaxLevelReached:
+            Button[0] += " Off"
+        Counter += 1
+    
+    LevelSelectionScreen.CreateButtons(ButtonsToMake, (0,0))
+
 
 class Menu():
-    def __init__(self, MenuBackgroundImgPath, Screen):
+    def __init__(self, MenuBackgroundImgPath, Screen, MenuType):
         # Displaying Menu
         self.image = pygame.image.load(MenuBackgroundImgPath).convert_alpha()
         self.rect = self.image.get_rect()
         self.DisplaySurface = Screen
         self.DisplayingMenu = False
+        self.MenuType = MenuType 
         self.Return = False         # Indicates if player has pressed 'Return' in the in-game menu
-
+        
         # Buttons
         self.Buttons = pygame.sprite.Group()
         self.MouseDown = False
 
-        # Timer
-        self.DisableTimer = False
+        # Setup for specific menus
+        if MenuType == "In-Game Menu":
+            self.DisableTimer = False
+        elif MenuType == "Level Selection Screen":
+            self.MaxLevelReached = 0
 
             
     def CreateButtons(self, Buttons, MenuOffset):
@@ -65,10 +82,11 @@ class Menu():
             button = Button(ButtonName, Buttons[ButtonNum][1], Buttons[ButtonNum][2], ButtonImage)
             self.Buttons.add(button)
 
-        # Add offset to buttons
-        for button in self.Buttons:
-            button.rect.x += MenuOffset[0]
-            button.rect.y += MenuOffset[1]
+        if self.MenuType == "In-Game Menu":
+            # Add offset to buttons
+            for button in self.Buttons:
+                button.rect.x += MenuOffset[0]
+                button.rect.y += MenuOffset[1]
 
     def update(self):
         # Refresh images
@@ -163,14 +181,6 @@ class Button(pygame.sprite.Sprite):
                 else:
                     self.image = pygame.image.load("MenuItems/Buttons/Timer.png").convert_alpha()
                     self.On = True
-
-            # elif self.Name == 'Return':
-            #     # Return to title screen
-            #     print()
-
-            elif self.Name == 'Exit':
-                # Close program
-                sys.exit()
 
             # Ensure the volume is a float to 1 d.p
             Volume = round(Volume, 1)
