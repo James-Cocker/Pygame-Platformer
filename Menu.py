@@ -37,12 +37,12 @@ def CreateButtonsForLevelSelectionScreen(MaxLevelReached, LevelSelectionScreen):
     for button in LevelSelectionScreen.Buttons:
         button.kill()
 
-    ButtonsToMake = [['Level 0',550,197],['Level 1',244,277],['Level 2',550,277],['Level 3',856,277],['Level 4',244,357],['Level 5',550,357],['Level 6',856,357],['Level 7',244,436],['Level 8',550,436],['Level 9',856,436]]
+    ButtonsToMake = [['Level 0',550,197],['Level 1',244,277],['Level 2',550,277],['Level 3',856,277],['Level 4',244,357],['Level 5',550,357],['Level 6',856,357],['Level 7',244,436],['Level 8',550,436],['Level 9',856,436],['See Stats',158,183],['See High Scores',907,183],]
 
     # Loop through each button and set it to the 'off' image if the user is unable to press it 
     Counter = 0
     for Button in ButtonsToMake:
-        if Counter > MaxLevelReached:
+        if Counter > MaxLevelReached and Counter <= 9:
             Button[0] += " Off"
         Counter += 1
     
