@@ -115,8 +115,8 @@ class FlowerEnemy(Enemy):
 # Third type of enemy
 class WheelBot(Enemy):
     def __init__(self, SpawnPoint, TileSize):
-        Speed = 0.7
-        Size = ()###################
+        Speed = random.randint(4,5)
+        Size = (43,26)
         AnimationsPath = 'SpriteSheets/Enemies/Wheel Bot/'
         super().__init__(AnimationsPath, Speed, SpawnPoint, Size, TileSize)
     

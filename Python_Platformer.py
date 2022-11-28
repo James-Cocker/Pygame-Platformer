@@ -16,7 +16,7 @@ Clock = pygame.time.Clock()
 GameWon = False
 StartedGame = False
 CurrentLevelNum = -1
-NumberOfLastLevel = 3
+NumberOfLastLevel = 5
 ProgrammerMode = False          # Set to true if you would like to see world as the basic rectangles the computer sees
 
 # Player background game music
@@ -26,7 +26,7 @@ mixer.music.play()
 
 # Set player lives and abilities - This is not done in 'player' or 'Levels' as the player should retain their number of lives through the entire playthrough (lives are never reset back to 5)
 # This is in the format [ No. of lives (between 1 and 5), double jump collected?, dash collected? ]
-PlayerLivesAndAbilities = [5, False, False]
+PlayerLivesAndAbilities = [5, True, False]
 
 # Routine to load and return the next level automatically after the prvious has been completed
 def MoveToNextLevel(CurrentLevelNum, PlayerLivesAndAbilities, MaxLevelReached):
@@ -83,8 +83,6 @@ while True:
     # Give this its own routine so that when user 'returns' back to level selection screen, their max level reached (and hence the buttons available to them) have updated
     CreateButtonsForLevelSelectionScreen(int(MaxLevelReached), LevelSelectionScreen)
 
-    DisplayStats = False
-    DisplayHighScores = False
     while CurrentLevelNum == -1:
         for event in pygame.event.get():
             if event.type==pygame.QUIT:
@@ -96,17 +94,17 @@ while True:
         screen.fill((11, 11, 11))
         LevelSelectionScreen.update()
 
+        # Check for button presses on level selection or stats/ high score screens
         for button in LevelSelectionScreen.Buttons:
-            for Num in range(len(LevelSelectionScreen.Buttons)):
-                if button.Clicked:
-                    if button.Name == ('Level ' + str(Num)):
-                        CurrentLevelNum = Num
-                        break
-                    elif button.Name == 'See Stats':
-                        DisplayStatsScreen(MaxLevelReached,PlayerID,PlayerInfo,screen)
-                    elif button.Name == 'See High Scores':
-                        DisplayHighScoreScreen(MaxLevelReached,PlayerID,PlayerInfo,screen)
-                    button.Clicked = False
+            if button.Clicked:
+                if 'Level' in button.Name and not('Off' in button.Name):
+                    CurrentLevelNum = int(button.Name[-1])
+                    break
+                elif button.Name == 'See Stats':
+                    DisplayStatsScreen(MaxLevelReached,PlayerID,PlayerInfo,screen)
+                elif button.Name == 'See High Scores':
+                    DisplayHighScoreScreen(MaxLevelReached,PlayerID,PlayerInfo,screen)
+                button.Clicked = False
 
         pygame.display.update()
         Clock.tick(60)

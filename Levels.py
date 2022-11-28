@@ -66,6 +66,7 @@ class Level:
         RespawnBlock = 305
         PortalBlock = 322
         BlindingSpiderEnemy = 290
+        WheelBotEnemy = 303
         InvisibleEnemyWall = 286
         goldengear = 307
         PlayerSpawn = 285
@@ -128,6 +129,10 @@ class Level:
                     self.AnimatedObjects.add(tile)
                 elif CurrentValue == BlindingSpiderEnemy:
                     enemy = BlindingSpider((x,y), TileSize)
+                    self.enemies.add(enemy)
+                    self.tiles.add(enemy)
+                elif CurrentValue == WheelBotEnemy:
+                    enemy = WheelBot((x,y), TileSize)
                     self.enemies.add(enemy)
                     self.tiles.add(enemy)
                 elif CurrentValue == goldengear:
