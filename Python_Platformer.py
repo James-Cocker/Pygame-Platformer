@@ -149,9 +149,11 @@ while True:
             CurrentLevel.run()
         else:
             if int(CurrentLevelNum) != 0:
-                # Saving current time and whether the golden gear has been collected, as long as it is not the introduction level
-                PlayerInfo[(int(CurrentLevelNum)*2)] = str(CurrentLevel.ElapsedTime)
-                PlayerInfo[1+(int(CurrentLevelNum)*2)] = str(CurrentLevel.CollectedGoldenGear)
+                # Saving current time and whether the golden gear has been collected, as long as it is not the introduction level and their previous time was longer
+                PreviousTime = PlayerInfo[(int(CurrentLevelNum)*2)]
+                if CurrentLevel.ElapsedTime < PreviousTime or PreviousTime == -1:
+                    PlayerInfo[(int(CurrentLevelNum)*2)] = str(CurrentLevel.ElapsedTime)
+                    PlayerInfo[1+(int(CurrentLevelNum)*2)] = str(CurrentLevel.CollectedGoldenGear)
 
             if int(CurrentLevelNum) == NumberOfLastLevel:
                 # Save scores and return player back to level selection once game is over
