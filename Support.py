@@ -81,20 +81,32 @@ def LoadLevelsReached(Name):
     for PlayerInfo in Lines:
         if PlayerInfo[0] == Name:
             PlayerID = ListNum
-            return PlayerInfo[1], PlayerInfo, PlayerID
+
+            if PlayerInfo[len(PlayerInfo)-2] == '1': DoubleJump = True
+            else: DoubleJump = False
+
+            if PlayerInfo[len(PlayerInfo)-1] == '1': Dash = True
+            else: Dash = False
+
+            PlayerLivesAndAbilities = [5, DoubleJump, Dash]
+
+            return PlayerInfo[1], PlayerInfo, PlayerID, PlayerLivesAndAbilities
         ListNum += 1
 
     # Otherwise set the player's ID to the next line in the csv file
     PlayerID = ListNum
 
-    # In the format: Name, max level reached, time taken for level 0, golden gear collected? (T/F), time taken for level 1, golden gear collected? (T/F), ect...
-    PlayerInfo = [Name,0,-1,False,-1,False,-1,False,-1,False,-1,False,-1,False,-1,False,-1,False,-1,False,-1,False]
+    # In the format: Name, max level reached, time taken for level 0, golden gear collected? (T/F), time taken for level 1, golden gear collected? (T/F), ect... and the last two are 'double jump collected?(1/0), dash collected?(1/0)' 
+    PlayerInfo = [Name,0,-1,False,-1,False,-1,False,-1,False,-1,False,-1,False,-1,False,-1,False,-1,False,-1,False, 0, 0]
     Lines.append(PlayerInfo)
 
     SaveUpdatedFile(Lines)
 
+    # Creating the new player's lives and abilities to be returned
+    PlayerLivesAndAbilities = [5,False,False]
+
     # If player has just created new entry in the csv then report their max level as 0 and return their ID in table (row num)
-    return 0, PlayerInfo, PlayerID
+    return 0, PlayerInfo, PlayerID, PlayerLivesAndAbilities
 
 def DisplayHighScoreScreen(MaxLevelReached, PlayerID, PlayerInfoToSave, screen):
     # Creating a 2D array of all level times, in the form [[Player 1s Level 1 time, P1s Level 2 time, ect..], [P2s Level 1 time, ect...], ect...]           --- >          Intro level is not stored or displayed in high scores
