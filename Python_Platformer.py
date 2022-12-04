@@ -16,7 +16,7 @@ Clock = pygame.time.Clock()
 GameWon = False
 StartedGame = False
 CurrentLevelNum = -1
-NumberOfLastLevel = 5
+NumberOfLastLevel = 9
 ProgrammerMode = False          # Set to true if you would like to see world as the basic rectangles the computer sees
 
 # Player background game music
@@ -24,12 +24,14 @@ mixer.music.load('MenuItems/BackgroundMusic.mp3')
 mixer.music.set_volume(0.2)
 mixer.music.play()  
 
-# Set player lives and abilities - This is not done in 'player' or 'Levels' as the player should retain their number of lives through the entire playthrough (lives are never reset back to 5)
+# Set player lives and abilities - This is not done in 'player' or 'Levels' as the player should retain their abilities through the entire playthrough
 # This is in the format [ No. of lives (between 1 and 5), double jump collected?, dash collected? ]
-PlayerLivesAndAbilities = [5, True, False]
+#PlayerLivesAndAbilities = [5, True, True]
 
 # Routine to load and return the next level automatically after the prvious has been completed
 def MoveToNextLevel(CurrentLevelNum, PlayerLivesAndAbilities, MaxLevelReached):
+    # Reset Health
+    PlayerLivesAndAbilities[0] = 5
     # Increase max level num if they are progressing through the game (to prevent incrementing by one when player is replaying old levels)
     CurrentLevelNum += 1
     if MaxLevelReached <= CurrentLevelNum:
@@ -42,7 +44,8 @@ def MoveToNextLevel(CurrentLevelNum, PlayerLivesAndAbilities, MaxLevelReached):
 # --- Name Screen ---
 
 Name = DisplayNameScreen(screen)
-MaxLevelReached,PlayerInfo,PlayerID = LoadLevelsReached(Name)
+MaxLevelReached,PlayerInfo,PlayerID,PlayerLivesAndAbilities = LoadLevelsReached(Name)
+print(PlayerLivesAndAbilities)
 
 # Create Menus (only needs to be created once each time the program is loaded)
 TitleScreen = CreateTitleScreen(screen)
@@ -143,15 +146,20 @@ while True:
 
         # Running the next level when the player compltes the first one
         if CurrentLevel.FinishedLevel == False:
-            CurrentLevel.run()               
-        elif int(CurrentLevelNum) < NumberOfLastLevel:
-            # Saving current time and whether the golden gear has been collected
-            PlayerInfo[2+(int(CurrentLevelNum)*2)] = str(CurrentLevel.ElapsedTime)
-            PlayerInfo[3+(int(CurrentLevelNum)*2)] = str(CurrentLevel.CollectedGoldenGear)
-            CurrentLevel, CurrentLevelNum, MaxLevelReached = MoveToNextLevel(int(CurrentLevelNum), PlayerLivesAndAbilities, int(MaxLevelReached))
+            CurrentLevel.run()
         else:
-            # Display winning screen and return back to menu
-            continue
+            if int(CurrentLevelNum) != 0:
+                # Saving current time and whether the golden gear has been collected, as long as it is not the introduction level
+                PlayerInfo[(int(CurrentLevelNum)*2)] = str(CurrentLevel.ElapsedTime)
+                PlayerInfo[1+(int(CurrentLevelNum)*2)] = str(CurrentLevel.CollectedGoldenGear)
+
+            if int(CurrentLevelNum) == NumberOfLastLevel:
+                # Save scores and return player back to level selection once game is over
+                SaveScores(MaxLevelReached, PlayerID, PlayerInfo)
+                InGameMenu.Return = True
+            else:
+                # Otherwise move to next level
+                CurrentLevel, CurrentLevelNum, MaxLevelReached = MoveToNextLevel(int(CurrentLevelNum), PlayerLivesAndAbilities, int(MaxLevelReached))
 
         # Save and exit if the user has chosen to quit the game from pressing 'exit' in the in-game menu
         if CurrentLevel.SaveAndExit:

@@ -1,7 +1,8 @@
 {
-    "activeFile": "C:/Users/james/Documents/BOURNEMOUTH SCHOOL/ALevel/Computer Science/School Projects/Coursework/Prototype 4/Levels/Level 5/Abstract Level 5.tmx",
+    "activeFile": "C:/Users/james/Documents/BOURNEMOUTH SCHOOL/ALevel/Computer Science/School Projects/Coursework/Prototype 4/Levels/Level 6/Abstract Level 6.tmx",
     "expandedProjectPaths": [
     ],
+    "file.lastUsedOpenFilter": "All Files (*)",
     "fileStates": {
         "Abstract Level 3.tmx": {
             "scale": 0.11629169596125302,
@@ -34,16 +35,72 @@
             "scale": 0.75,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 12372,
-                "y": 192
+                "x": 6399.333333333333,
+                "y": 320
             }
         },
         "C:/Users/james/Documents/BOURNEMOUTH SCHOOL/ALevel/Computer Science/School Projects/Coursework/Prototype 4/Levels/Level 5/Level 5.tmx": {
+            "scale": 2,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 6400.25,
+                "y": 320.5
+            }
+        },
+        "C:/Users/james/Documents/BOURNEMOUTH SCHOOL/ALevel/Computer Science/School Projects/Coursework/Prototype 4/Levels/Level 6/Abstract Level 5.tmx": {
+            "scale": 0.13165377704866807,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 6403.158488103009,
+                "y": 326.61425265531307
+            }
+        },
+        "C:/Users/james/Documents/BOURNEMOUTH SCHOOL/ALevel/Computer Science/School Projects/Coursework/Prototype 4/Levels/Level 6/Abstract Level 6.tmx": {
+            "scale": 0.75,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 6398,
+                "y": 320
+            }
+        },
+        "C:/Users/james/Documents/BOURNEMOUTH SCHOOL/ALevel/Computer Science/School Projects/Coursework/Prototype 4/Levels/Level 7/Abstract Level 7.tmx": {
+            "scale": 0.5,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 11364,
+                "y": 294
+            }
+        },
+        "C:/Users/james/Documents/BOURNEMOUTH SCHOOL/ALevel/Computer Science/School Projects/Coursework/Prototype 4/Levels/Level 8/Abstract Level 8.tmx": {
+            "scale": 0.5,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 9599,
+                "y": 320
+            }
+        },
+        "C:/Users/james/Documents/BOURNEMOUTH SCHOOL/ALevel/Computer Science/School Projects/Coursework/Prototype 4/Levels/Level 8/Level 8.tmx": {
             "scale": 1,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 11400,
-                "y": 384
+                "x": 9600.5,
+                "y": 321
+            }
+        },
+        "C:/Users/james/Documents/BOURNEMOUTH SCHOOL/ALevel/Computer Science/School Projects/Coursework/Prototype 4/Levels/Level 9/Abstract Level 9.tmx": {
+            "scale": 0.5,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 6399,
+                "y": 322
+            }
+        },
+        "C:/Users/james/Documents/BOURNEMOUTH SCHOOL/ALevel/Computer Science/School Projects/Coursework/Prototype 4/Levels/Level 9/Level 9.tmx": {
+            "scale": 0.5,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 5919,
+                "y": 322
             }
         },
         "C:/Users/james/Documents/BOURNEMOUTH SCHOOL/ALevel/Computer Science/School Projects/Coursework/Prototype 4/Levels/Tileset/Tileset with Background.tsx": {
@@ -66,21 +123,30 @@
             }
         }
     },
-    "last.exportedFilePath": "C:/Users/james/Documents/BOURNEMOUTH SCHOOL/ALevel/Computer Science/School Projects/Coursework/Prototype 4/Levels/Level 5",
+    "last.exportedFilePath": "C:/Users/james/Documents/BOURNEMOUTH SCHOOL/ALevel/Computer Science/School Projects/Coursework/Prototype 4/Levels/Level 9",
     "map.lastUsedExportFilter": "All Files (*)",
     "map.lastUsedFormat": "tmx",
     "openFiles": [
-        "C:/Users/james/Documents/BOURNEMOUTH SCHOOL/ALevel/Computer Science/School Projects/Coursework/Prototype 4/Levels/Level 5/Abstract Level 5.tmx",
-        "C:/Users/james/Documents/BOURNEMOUTH SCHOOL/ALevel/Computer Science/School Projects/Coursework/Prototype 4/Levels/Level 5/Level 5.tmx"
+        "C:/Users/james/Documents/BOURNEMOUTH SCHOOL/ALevel/Computer Science/School Projects/Coursework/Prototype 4/Levels/Level 8/Abstract Level 8.tmx",
+        "C:/Users/james/Documents/BOURNEMOUTH SCHOOL/ALevel/Computer Science/School Projects/Coursework/Prototype 4/Levels/Level 8/Level 8.tmx",
+        "C:/Users/james/Documents/BOURNEMOUTH SCHOOL/ALevel/Computer Science/School Projects/Coursework/Prototype 4/Levels/Level 9/Abstract Level 9.tmx",
+        "C:/Users/james/Documents/BOURNEMOUTH SCHOOL/ALevel/Computer Science/School Projects/Coursework/Prototype 4/Levels/Level 9/Level 9.tmx",
+        "C:/Users/james/Documents/BOURNEMOUTH SCHOOL/ALevel/Computer Science/School Projects/Coursework/Prototype 4/Levels/Level 5/Level 5.tmx",
+        "C:/Users/james/Documents/BOURNEMOUTH SCHOOL/ALevel/Computer Science/School Projects/Coursework/Prototype 4/Levels/Level 6/Abstract Level 6.tmx"
     ],
     "project": "Level 4.tiled-project",
     "recentFiles": [
+        "C:/Users/james/Documents/BOURNEMOUTH SCHOOL/ALevel/Computer Science/School Projects/Coursework/Prototype 4/Levels/Level 8/Abstract Level 8.tmx",
+        "C:/Users/james/Documents/BOURNEMOUTH SCHOOL/ALevel/Computer Science/School Projects/Coursework/Prototype 4/Levels/Level 8/Level 8.tmx",
+        "C:/Users/james/Documents/BOURNEMOUTH SCHOOL/ALevel/Computer Science/School Projects/Coursework/Prototype 4/Levels/Level 9/Abstract Level 9.tmx",
+        "C:/Users/james/Documents/BOURNEMOUTH SCHOOL/ALevel/Computer Science/School Projects/Coursework/Prototype 4/Levels/Level 9/Level 9.tmx",
         "C:/Users/james/Documents/BOURNEMOUTH SCHOOL/ALevel/Computer Science/School Projects/Coursework/Prototype 4/Levels/Level 5/Level 5.tmx",
+        "C:/Users/james/Documents/BOURNEMOUTH SCHOOL/ALevel/Computer Science/School Projects/Coursework/Prototype 4/Levels/Level 6/Abstract Level 6.tmx",
+        "C:/Users/james/Documents/BOURNEMOUTH SCHOOL/ALevel/Computer Science/School Projects/Coursework/Prototype 4/Levels/Level 7/Abstract Level 7.tmx",
         "C:/Users/james/Documents/BOURNEMOUTH SCHOOL/ALevel/Computer Science/School Projects/Coursework/Prototype 4/Levels/Level 5/Abstract Level 5.tmx",
+        "C:/Users/james/Documents/BOURNEMOUTH SCHOOL/ALevel/Computer Science/School Projects/Coursework/Prototype 4/Levels/Level 6/Abstract Level 5.tmx",
         "Level 4.tmx",
         "Abstract Level 4.tmx",
-        "Level 4..tmx",
-        "C:/Users/james/Documents/BOURNEMOUTH SCHOOL/ALevel/Computer Science/School Projects/Coursework/Prototype 4/Levels/Level 3/Level 3.tmx",
-        "Abstract Level 3.tmx"
+        "Level 4..tmx"
     ]
 }

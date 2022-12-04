@@ -123,7 +123,7 @@ class Level:
                     self.RespawnPointLocations.append([x,y])
                     self.AnimatedObjects.add(tile)
                 elif CurrentValue == PortalBlock:
-                    tile = Portal((x,y),(112,164), TileSize, 'Portal')     
+                    tile = Portal((x,y),(112,12), TileSize, 'Portal')     
                     self.portal = tile   
                     self.tiles.add(tile)
                     self.AnimatedObjects.add(tile)
@@ -183,23 +183,27 @@ class Level:
         MaxPlayerX = ScreenWidth - MinPlayerX
 
         # Checking if the player is within the border, if not then move the world as such
-        if player.Dashing:
-            if (new_player_x < MinPlayerX) or (new_player_x > MaxPlayerX):
-                self.WorldShiftX = -round(Direction_x) * 7
-                player.PlayerSpeed = 0
-
-        else:
-            if new_player_x < MinPlayerX and Direction_x < 0:
-                self.WorldShiftX = player.NormalSpeed
-                player.PlayerSpeed = 0
-
-            elif new_player_x > MaxPlayerX and Direction_x > 0:
-                self.WorldShiftX = -(player.NormalSpeed)
-                player.PlayerSpeed = 0
+        if player.Status != 'Death':
+            if player.Dashing:
+                if (new_player_x < MinPlayerX) or (new_player_x > MaxPlayerX):
+                    self.WorldShiftX = -round(Direction_x) * 7
+                    player.PlayerSpeed = 0
 
             else:
-                self.WorldShiftX = 0
-                player.PlayerSpeed = player.NormalSpeed
+                if new_player_x < MinPlayerX and Direction_x < 0:
+                    self.WorldShiftX = player.NormalSpeed
+                    player.PlayerSpeed = 0
+
+                elif new_player_x > MaxPlayerX and Direction_x > 0:
+                    self.WorldShiftX = -(player.NormalSpeed)
+                    player.PlayerSpeed = 0
+
+                else:
+                    self.WorldShiftX = 0
+                    player.PlayerSpeed = player.NormalSpeed
+        else:
+            self.WorldShiftX = 0
+            player.PlayerSpeed = 0
 
         # Move the level if they are still not within bounds
         if Direction_x == 0:
@@ -377,6 +381,7 @@ class Level:
         # Check for the player to have died, and finished their death animation before resetting level and player
         if player.Status == 'Death' and (int(player.FrameIndex) == len(player.Animation) - 1):
             player.SpacePressed = False         # So that the player does not bounce after being respawned
+            player.ShiftPressed = False         # So that the player does not dash after being respawned
 
             player.FrameIndex = len(player.Animation) - 1         # Keep the player at the last frame of death so this loop will continue
 
@@ -482,7 +487,6 @@ class Level:
 
             PlayerWidth = player.rect.width         # Storing the temporary value of the width so the player can be checked for collisions with the correct rect, 
             player.rect.width = 25                  # then it can be put back for when the next animation slide is placed on the rect
-            self.portal.rect.y += 156               # Similar with portal, except shift it up and down  
 
             self.X_CollisionCheck(player)           # Check collisions for the x and y directions of the player. This must be done separately so that we know wether 
             self.Y_CollisionCheck(player)           # the player needs to be 'pushed' in the x or y direction of a block
@@ -494,7 +498,6 @@ class Level:
                 self.display_surface.blit(player.image, (player.rect.x - 50, player.rect.y))
             
             player.rect.width = PlayerWidth      # Restore player's rect for the image processing
-            self.portal.rect.y -= 156            # Restore portal's rect
         else:
             self.WorldShiftX = 0                 # Stop shifting world if warping
 

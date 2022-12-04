@@ -25,7 +25,7 @@ class Player(pygame.sprite.Sprite):
         self.NormalSpeed = self.PlayerSpeed
         self.JumpSpeed = -17
         self.Gravity = 0.9
-        self.DashCooldown = 0.4             # Time between being able to dash is 0.4s
+        #self.DashCooldown = 0.4             # Time between being able to dash is 0.4s
         self.DashSpeed = 5
 
         self.OnPlatform = False

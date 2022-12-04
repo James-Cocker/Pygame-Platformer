@@ -248,6 +248,3 @@ class Spring(AnimatedObject):
             self.Status = 'Idle'
             self.Animation = self.Animations[self.Status] 
             self.image = self.Animation[self.FrameIndex]
-
-
-
