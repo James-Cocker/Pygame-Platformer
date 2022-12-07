@@ -152,6 +152,7 @@ def DisplayHighScoreScreen(MaxLevelReached, PlayerID, PlayerInfoToSave, screen):
     
 def DisplayStatsScreen(MaxLevelReached, PlayerID, PlayerInfo, screen):
     Background = pygame.image.load('MenuItems/Menus/Stats Screen.png').convert_alpha()
+    GoldenGear = pygame.image.load('MenuItems/Golden Gear Stats.png').convert_alpha()
     screen.blit(Background, (0,0))
 
     IndexesOFTimes = [2,4,6,8,10,12,14,16,18,20]      # Statically set list of indexes as it would be hard to loop through dynamically
@@ -159,6 +160,8 @@ def DisplayStatsScreen(MaxLevelReached, PlayerID, PlayerInfo, screen):
 
     Font = pygame.font.SysFont("8-Bit-Madness", 45)
     for LevelNum in range(9):
+        if str(PlayerInfo[1+(LevelNum*2)]) == 'True':
+            screen.blit(GoldenGear,(OutputTextLocations[LevelNum-1][0] - 45,OutputTextLocations[LevelNum-1][1]-5))
         Text = "Level " + str(LevelNum+1) + ": " + PlayerInfo[(IndexesOFTimes[LevelNum])] + "s"
         OutputText = Font.render(Text, True, (0,0,0))
         screen.blit(OutputText, OutputTextLocations[LevelNum])

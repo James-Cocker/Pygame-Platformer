@@ -108,6 +108,7 @@ class Menu():
 
                 elif button.Name == 'Return' and button.Clicked:
                     self.Return = True
+                    button.Clicked = False
 
             # Reset mouse down
             self.MouseDown = False

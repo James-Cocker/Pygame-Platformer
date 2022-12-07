@@ -30,8 +30,6 @@ mixer.music.play()
 
 # Routine to load and return the next level automatically after the prvious has been completed
 def MoveToNextLevel(CurrentLevelNum, PlayerLivesAndAbilities, MaxLevelReached):
-    # Reset Health
-    PlayerLivesAndAbilities[0] = 5
     # Increase max level num if they are progressing through the game (to prevent incrementing by one when player is replaying old levels)
     CurrentLevelNum += 1
     if MaxLevelReached <= CurrentLevelNum:
@@ -45,7 +43,6 @@ def MoveToNextLevel(CurrentLevelNum, PlayerLivesAndAbilities, MaxLevelReached):
 
 Name = DisplayNameScreen(screen)
 MaxLevelReached,PlayerInfo,PlayerID,PlayerLivesAndAbilities = LoadLevelsReached(Name)
-print(PlayerLivesAndAbilities)
 
 # Create Menus (only needs to be created once each time the program is loaded)
 TitleScreen = CreateTitleScreen(screen)
@@ -149,10 +146,14 @@ while True:
             CurrentLevel.run()
         else:
             if int(CurrentLevelNum) != 0:
-                # Saving current time and whether the golden gear has been collected, as long as it is not the introduction level and their previous time was longer
-                PreviousTime = PlayerInfo[(int(CurrentLevelNum)*2)]
-                if CurrentLevel.ElapsedTime < PreviousTime or PreviousTime == -1:
+                PreviousTime = float(PlayerInfo[(int(CurrentLevelNum)*2)])
+
+                # Save level completion time if it has not been filled in (when it = -1.0) or if the player has beaten their prvious score
+                if CurrentLevel.ToDisableTimer == False and (float(CurrentLevel.ElapsedTime) < PreviousTime or str(PreviousTime) == "-1.0"):
                     PlayerInfo[(int(CurrentLevelNum)*2)] = str(CurrentLevel.ElapsedTime)
+                # Save golden gear separately as long as it is not already true (meaning if the player does one run in a short time without the golden gear, then another and collects the golden gear their saved progress
+                # will show them with a short time and still haven collected the golden gear - but this was the desired intent)
+                if str(PlayerInfo[1+(int(CurrentLevelNum)*2)]) == 'False':
                     PlayerInfo[1+(int(CurrentLevelNum)*2)] = str(CurrentLevel.CollectedGoldenGear)
 
             if int(CurrentLevelNum) == NumberOfLastLevel:

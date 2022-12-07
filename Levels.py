@@ -22,6 +22,7 @@ class Level:
         self.Scrolling = False
 
         # Health Bar
+        PlayerLivesAndAbilities[0] = 5          # Reset Health
         self.PlayerLives = PlayerLivesAndAbilities[0]
         self.HealthBarImg = pygame.image.load('MenuItems/Health Bar/' + str(self.PlayerLives) + '.png').convert_alpha()
 
@@ -123,7 +124,7 @@ class Level:
                     self.RespawnPointLocations.append([x,y])
                     self.AnimatedObjects.add(tile)
                 elif CurrentValue == PortalBlock:
-                    tile = Portal((x,y),(112,12), TileSize, 'Portal')     
+                    tile = Portal((x,y),(112,12), TileSize, 'Portal')
                     self.portal = tile   
                     self.tiles.add(tile)
                     self.AnimatedObjects.add(tile)
@@ -415,7 +416,7 @@ class Level:
                         RespawnPointNum.Status = 'Idle'
                         player.Direction.y = 0
                         player.FrameIndex = 0
-                        player.rect = player.image.get_rect(topleft = (player.RespawnPoint[0] + 30, player.RespawnPoint[1] - 30))
+                        player.rect = player.image.get_rect(topleft = (player.RespawnPoint[0] + 30, player.RespawnPoint[1] - 10))
                         player.Alive = True
                
     def UpdateTimer(self, DisableTimer):
@@ -487,6 +488,8 @@ class Level:
 
             PlayerWidth = player.rect.width         # Storing the temporary value of the width so the player can be checked for collisions with the correct rect, 
             player.rect.width = 25                  # then it can be put back for when the next animation slide is placed on the rect
+            self.portal.rect.h = 12
+            self.portal.rect.y += 156               # Similar with portal, except shift it up and down  
 
             self.X_CollisionCheck(player)           # Check collisions for the x and y directions of the player. This must be done separately so that we know wether 
             self.Y_CollisionCheck(player)           # the player needs to be 'pushed' in the x or y direction of a block
@@ -498,6 +501,8 @@ class Level:
                 self.display_surface.blit(player.image, (player.rect.x - 50, player.rect.y))
             
             player.rect.width = PlayerWidth      # Restore player's rect for the image processing
+            self.portal.rect.y -= 156            # Restore portal's rect
+            self.portal.rect.h = 164
         else:
             self.WorldShiftX = 0                 # Stop shifting world if warping
 
@@ -518,7 +523,7 @@ class Level:
         # Display health bar
         self.display_surface.blit(self.HealthBarImg, (50, 0))
 
-        # Display golden gear in bottom right if collected, otherwise display it on the screen
+        # Display golden gear in bottom right if collected, otherwise display it on the screen -> this means that in programmer mode, the golden gear will not 'disapear' when collected
         if self.CollectedGoldenGear:
             self.display_surface.blit(self.GoldenGearImg, (ScreenWidth - 100, ScreenHeight - 100))
         else:
