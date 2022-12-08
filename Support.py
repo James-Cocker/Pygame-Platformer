@@ -160,11 +160,13 @@ def DisplayStatsScreen(MaxLevelReached, PlayerID, PlayerInfo, screen):
 
     Font = pygame.font.SysFont("8-Bit-Madness", 45)
     for LevelNum in range(9):
-        if str(PlayerInfo[1+(LevelNum*2)]) == 'True':
-            screen.blit(GoldenGear,(OutputTextLocations[LevelNum-1][0] - 45,OutputTextLocations[LevelNum-1][1]-5))
-        Text = "Level " + str(LevelNum+1) + ": " + PlayerInfo[(IndexesOFTimes[LevelNum])] + "s"
-        OutputText = Font.render(Text, True, (0,0,0))
-        screen.blit(OutputText, OutputTextLocations[LevelNum])
+        if PlayerInfo[(IndexesOFTimes[LevelNum])] != -1:
+            if str(PlayerInfo[1+(LevelNum*2)]) == 'True':
+                screen.blit(GoldenGear,(OutputTextLocations[LevelNum-1][0] - 45,OutputTextLocations[LevelNum-1][1]-5))
+            
+            Text = "Level " + str(LevelNum+1) + ": " + PlayerInfo[(IndexesOFTimes[LevelNum])] + "s"
+            OutputText = Font.render(Text, True, (0,0,0))
+            screen.blit(OutputText, OutputTextLocations[LevelNum])
     pygame.display.update()
 
     ReturnUponKeyPress(MaxLevelReached, PlayerID, PlayerInfo)
