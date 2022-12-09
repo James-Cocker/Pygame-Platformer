@@ -155,14 +155,15 @@ def DisplayStatsScreen(MaxLevelReached, PlayerID, PlayerInfo, screen):
     GoldenGear = pygame.image.load('MenuItems/Golden Gear Stats.png').convert_alpha()
     screen.blit(Background, (0,0))
 
-    IndexesOFTimes = [2,4,6,8,10,12,14,16,18,20]      # Statically set list of indexes as it would be hard to loop through dynamically
+    IndexesOFTimes = [2,4,6,8,10,12,14,16,18]      # Statically set list of indexes
     OutputTextLocations = [(330,220),(330,270),(330,320),(330,370),(330,420),(700,220),(700,270),(700,320),(700,370)]         # Same for text locations
 
     Font = pygame.font.SysFont("8-Bit-Madness", 45)
-    for LevelNum in range(9):
+    for LevelNum in range(9):           # Loops through all 9 levels in the order 0 to 8
         if PlayerInfo[(IndexesOFTimes[LevelNum])] != -1:
-            if str(PlayerInfo[1+(LevelNum*2)]) == 'True':
-                screen.blit(GoldenGear,(OutputTextLocations[LevelNum-1][0] - 45,OutputTextLocations[LevelNum-1][1]-5))
+            print(PlayerInfo,PlayerInfo[1+(LevelNum*2)], str(1+LevelNum*2))
+            if str(PlayerInfo[3+(LevelNum*2)]) == 'True':
+                screen.blit(GoldenGear, (OutputTextLocations[LevelNum][0] - 45, OutputTextLocations[LevelNum][1] - 5))
             
             Text = "Level " + str(LevelNum+1) + ": " + PlayerInfo[(IndexesOFTimes[LevelNum])] + "s"
             OutputText = Font.render(Text, True, (0,0,0))
