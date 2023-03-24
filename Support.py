@@ -161,7 +161,6 @@ def DisplayStatsScreen(MaxLevelReached, PlayerID, PlayerInfo, screen):
     Font = pygame.font.SysFont("8-Bit-Madness", 45)
     for LevelNum in range(9):           # Loops through all 9 levels in the order 0 to 8
         if PlayerInfo[(IndexesOFTimes[LevelNum])] != -1:
-            print(PlayerInfo,PlayerInfo[1+(LevelNum*2)], str(1+LevelNum*2))
             if str(PlayerInfo[3+(LevelNum*2)]) == 'True':
                 screen.blit(GoldenGear, (OutputTextLocations[LevelNum][0] - 45, OutputTextLocations[LevelNum][1] - 5))
             

@@ -141,9 +141,12 @@ while True:
 
         screen.fill((11, 11, 11))
 
-        # Running the next level when the player compltes the first one
+        # Running the next level when the player completes the first one
         if CurrentLevel.FinishedLevel == False:
             CurrentLevel.run()
+            # Reset Level if all lives are lost
+            # if CurrentLevel.LostAllLives:
+            #     CurrentLevel = Level(ImportCSV(CSVPath), screen, CurrentLevelNum, ProgrammerMode, InGameMenu, False, PlayerLivesAndAbilities)
         else:
             if int(CurrentLevelNum) != 0:
                 PreviousTime = float(PlayerInfo[(int(CurrentLevelNum)*2)])

@@ -21,3 +21,6 @@ def BlindingSpiderAttackSound():
 
 def PlaySpringSound():
     pygame.mixer.Channel(6).play(pygame.mixer.Sound('Sounds/Spring.wav'))
+
+def PlayRespawnSound():
+    pygame.mixer.Channel(7).play(pygame.mixer.Sound('Sounds/Respawn.wav'))

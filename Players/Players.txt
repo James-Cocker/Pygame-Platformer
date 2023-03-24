@@ -1,4 +1,4 @@
-JAMES,9,32.1,True,10.2,True,10.3,True,10.4,False,10.5,False,10.6,False,10.7,False,10.8,False,18.1,True,1,1
+JAMES,9,28.4,True,10.2,True,10.3,True,10.4,False,10.5,False,10.6,False,10.7,False,10.8,False,18.1,True,1,1
 MARK,2,11.0,False,29.0,True,1.0,False,11.0,False,11.0,False,11.0,False,11.0,False,11.0,False,0.1,False,1,0
 NEW,0,-1,False,-1,False,-1,False,-1,False,-1,False,-1,False,-1,False,-1,False,-1,False,-1,False,0,0
 POOPOO,9,66.5,True,86.9,True,94.2,False,357.7,False,251.2,False,357.0,False,179.9,False,315.9,False,27.3,False,-1,False,0,0
@@ -12,3 +12,10 @@ KJDLFKSD,0,-1,False,-1,False,-1,False,-1,False,-1,False,-1,False,-1,False,-1,Fal
 KLASDFJKL;,0,-1,False,-1,False,-1,False,-1,False,-1,False,-1,False,-1,False,-1,False,-1,False,-1,False,0,0
 KLJAD,0,-1,False,-1,False,-1,False,-1,False,-1,False,-1,False,-1,False,-1,False,-1,False,-1,False,0,0
 LASDFJLKSD,0,-1,False,-1,False,-1,False,-1,False,-1,False,-1,False,-1,False,-1,False,-1,False,-1,False,0,0
+KJSHFKLSDD,0,-1,False,-1,False,-1,False,-1,False,-1,False,-1,False,-1,False,-1,False,-1,False,-1,False,0,0
+ERWERWERWE,0,-1,False,-1,False,-1,False,-1,False,-1,False,-1,False,-1,False,-1,False,-1,False,-1,False,0,0
+SHKLOOGY,1,-1,False,-1,False,-1,False,-1,False,-1,False,-1,False,-1,False,-1,False,-1,False,-1,False,0,0
+NEIL,2,276.4,True,-1,False,-1,False,-1,False,-1,False,-1,False,-1,False,-1,False,-1,False,-1,False,0,0
+KDHLKFSDH,3,54.6,True,52.2,True,-1,False,-1,False,-1,False,-1,False,-1,False,-1,False,-1,False,-1,False,0,0
+RAND ACC,2,40.5,True,-1,False,-1,False,-1,False,-1,False,-1,False,-1,False,-1,False,-1,False,-1,False,0,0
+88,0,-1,False,-1,False,-1,False,-1,False,-1,False,-1,False,-1,False,-1,False,-1,False,-1,False,0,0

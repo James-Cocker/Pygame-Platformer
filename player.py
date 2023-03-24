@@ -9,6 +9,7 @@ class Player(pygame.sprite.Sprite):
     def __init__(self, SpawnPoint, ObtainedDoubleJump, ObtainedDash):
         super().__init__()
         self.ImportAssets()
+        self.SpawnPoint = SpawnPoint
         self.RespawnPoint = SpawnPoint
         self.FrameIndex = 0             # Used to pick one of the animation frames
         self.AnimationSpeed = 0.15      # How fast image will update

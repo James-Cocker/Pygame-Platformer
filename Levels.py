@@ -19,6 +19,7 @@ class Level:
         self.display_surface = surface
         self.CurrentLevelNum = CurrentLevelNum
         self.ProgrammerMode = ProgrammerMode
+        self.LostAllLives = False
         self.Scrolling = False
 
         # Health Bar
@@ -301,7 +302,8 @@ class Level:
                 # If they hit a respawn point, check they have not already done so, then set their new spawn point to here
                 elif sprite.type == 'Respawn':
                     if self.RespawnReached == sprite.ID - 1:            # If they have reached the next respawn point
-                        player.RespawnPoint = player.rect.topleft#(player.rect.x, player.rect.y)
+                        PlayRespawnSound()
+                        player.RespawnPoint = player.rect.topleft
                         if self.CollectedGoldenGear:
                             self.SavedGoldenGear = True
                         self.RespawnReached += 1
@@ -373,6 +375,8 @@ class Level:
             if self.SavedGoldenGear == False:
                 self.CollectedGoldenGear = False
             PlayerDamagedSound()
+            if self.PlayerLives == 0:
+                self.LostAllLives = True
         elif self.PlayerLives < 5 and Amount > 0:
             self.PlayerLives += 1
         self.PlayerLivesAndAbilities[0] += Amount
@@ -400,7 +404,7 @@ class Level:
                 self.ChangePlayerLives(-1)
                 player.Direction.y = 0
                 player.FrameIndex = 0
-                player.rect = player.image.get_rect(topleft = player.RespawnPoint)
+                player.rect = player.image.get_rect(topleft = player.SpawnPoint)
                 player.Alive = True
             else:
                 # Start the startup animation of the respawn point
